@@ -1,0 +1,122 @@
+%\documentclass[12pt,ascmac]{jreport}
+\documentclass[12pt]{jreport}
+\usepackage{./sty/eclepsf}
+\usepackage{tascmac}
+\usepackage{tabularx}
+\usepackage[longnamesfirst]{natbib}
+\usepackage[dvipdfmx]{graphics}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage[dvipdfmx]{color}
+\usepackage{subfigure}
+\usepackage{alltt}
+\usepackage{./sty/ncodeline}
+%\usepackage[dvipdfmx, colorlinks, breaklinks,%
+\usepackage[dvipdfmx, breaklinks,%
+bookmarks=true, bookmarksnumbered=true,%
+bookmarkstype=toc, bookmarksopen=true,bookmarksopenlevel=3,%
+pdftitle={Proposal and Implementation of Latency Efficient Overlay Network (LEON)},%
+%%pdfsubject={},%
+pdfauthor={Yudai Yamagishi},%
+pdfkeywords={1.Latency, 2.Distributed, 3.Overlay Network, 4.Layer 2 Network Extension}%
+]{hyperref}
+\usepackage{bookmark}
+
+\AtBeginDvi{\special{pdf:tounicode EUC-UCS2}}
+
+\usepackage{fancyhdr}
+
+\usepackage{./sty/doxygenorig}
+
+\usepackage{indentfirst}
+\usepackage{url}
+\usepackage{listings,./sty/jlisting}
+
+\lstset{%
+ language={C++},
+ %backgroundcolor={\color[gray]{.85}},%
+ basicstyle={\small},%
+ identifierstyle={\small},%
+ commentstyle={\small\itshape},%
+ keywordstyle={\small\bfseries},%
+ ndkeywordstyle={\small},%
+ stringstyle={\small\ttfamily},
+ frame={tb},
+ breaklines=true,
+ columns=[l]{fullflexible},%
+ numbers=left,%
+ xrightmargin=0zw,%
+ xleftmargin=1.5zw,%
+ numberstyle={\scriptsize},%
+ stepnumber=1,
+ numbersep=1zw,%
+ lineskip=-0.5ex%
+}
+
+\usepackage{amssymb}
+%\usepackage{supertabular,multirow}
+
+% A4  size: 297mm*210mm %1pt = 0.35mm
+\setlength{\topmargin}{-3.4mm} % 10pt 25.4mm - 3.4mm = 22mm
+\setlength{\oddsidemargin}{-0.4mm} % 25.4mm - 0.4mm = 25mm
+\setlength{\evensidemargin}{-0.4mm} % 25.4mm - 0.4mm = 25mm
+\setlength{\textheight}{231mm} % 660pt % original is 225.75mm 645pt
+\setlength{\textwidth}{160mm} % 457pt
+
+\renewcommand{\topfraction}{.99}
+\renewcommand{\textfraction}{.0}
+\renewcommand{\floatpagefraction}{.99}
+\renewcommand{\bibname}{参考文献}
+
+\pagestyle{fancy}  
+%\rhead{\thepage}
+%\rhead[]{\leftmark} 
+\lhead[]{} 
+%\lhead[\rightmark]{} 
+
+\makeatletter
+\def\chaptermark#1{\markboth {\ifnum \c@secnumdepth>\m@ne
+\@chapapp\ \thechapter \@chappos\ \fi #1}{}}
+\makeatother
+
+\begin{document}
+
+\pagenumbering{roman}
+
+\input{src/titlepage}
+
+\thispagestyle{empty}
+\input{src/abstract_japanese}
+\clearpage
+
+\thispagestyle{empty}
+\input{src/abstract_english}
+\clearpage
+
+\tableofcontents\thispagestyle{empty} %目次
+\clearpage
+\listoffigures\thispagestyle{empty} %図目次
+\clearpage
+\listoftables\thispagestyle{empty} %表目次
+\clearpage
+\pagenumbering{arabic}
+\input{src/1_introduction}
+\input{src/2_related_works}
+\input{src/3_proposal}
+\input{src/4_experiment}
+\input{src/5_conclusion}
+\input{src/acknowledgement}
+
+\renewcommand{\thechapter}{\Alph{chapter}}
+\setcounter{chapter}{0}
+\vspace{-5mm}
+
+
+\input{bib/biblio}\thispagestyle{empty}%bibtex
+
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: japanese-latex
+%%% TeX-master: t
+%%% End:
