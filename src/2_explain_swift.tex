@@ -1,32 +1,7 @@
-\chapter{関連研究}
+\chapter{プログラミング言語Swift}
 \label{rw}
 
-\begin{figure}[h]
-	\begin{center}
-		\includegraphics[scale=0.50]{./img/l2tunnel}
-		\caption{Layer 2ネットワークの拡張手法}
-		\label{img:l2tunnel}
-	\end{center}
-\end{figure}
-
-Layer 2ネットワーク拡張技術を利用することにより、インターネット上に分散された複数の拠点に同一の
-Layer 2ネットワークを拡張することができる。広域に分散した複数の拠点でサービスを展開するためには、
-サービスを構成しているコンポーネントを拠点間で共有する必要がある場合が多い。広域に分散した複数の拠点間で
-、共通のセキュリティーポリシーが適用された状態で、共通のコンポーネントを利用する手法の1つとしてLayer 2ネットワーク
-拡張技術を利用するという手法が挙げられる。Layer 2ネットワーク拡張技術はインターネット上でLayer 2ネットワーク
-のイーサネットフレームを転送することにより、仮想的に広域なLayer 2ネットワークを構築する。
-
-Layer 2ネットワーク拡張技術はトンネル終端点となるコンピューターがスイッチのように動作する。動作の仕組みを図~\ref{img:l2tunnel}に示す。まず、Layer 2ネットワーク
-拡張技術を利用して構築されたLayer 2ネットワーク上のホストが、トンネルの反対側にいるコンピューター宛のイーサネットフレーム
-を送信する。それを受信したトンネル終端点は、受信したイーサネットフレームの先頭に、宛先が反対側のトンネル終端点となっている
-IPヘッダーを追加(=エンキャプシュレーション)して送信する。そして、エンキャプシュレーション
-されたイーサネットフレームを受信したトンネル終端点は、追加されたIPヘッダーを取り除く(=デキャプシュレーション)。
-最後に、宛先のホストへイーサネットフレームを転送する。これによりLayer 2ネットワークを拡張している。
-
-既存のLayer 2ネットワーク拡張技術は、一対一型のLayer 2トンネル技術と一対多型のLayer 2トンネル技
-術の2種類に分類することができる。以下で、それぞれの詳細を述べる。
-
-\section{一対一型のLayer 2ネットワーク拡張技術}
+\section{Swiftの目的}
 \label{rw:pointtopoint}
 
 \begin{figure}
@@ -84,7 +59,7 @@ Layer 2スイッチ間の遅延はほぼ無い状態なので、木構造のト�
 Layer 2ネットワークのトポロジーが木構造となってしまうため、必ず一部拠点間の遅延が大きくなってしまうという問題がある。
 
 
-\section{一対多型のLayer 2ネットワーク拡張技術}
+\section{Swiftの特徴}
 \label{rw:pointtomulti}
 
 \begin{figure}
@@ -108,9 +83,6 @@ Layer 2ネットワークのトポロジーが木構造となってしまうた�
 
 一対多型のLayer 2ネットワーク拡張技術の例としてVirtual Extensible Local Area Network(=VXLAN)~\cite{id:vxlan}
 とN2N~\cite{n2n}が挙げられる。これらの特徴を以下で述べる。
-
-\subsection{VXLAN}
-\label{rw:vxlan}
 
 \begin{figure}
 	\begin{center}
@@ -163,9 +135,6 @@ IPマルチキャストを利用して、インターネット上に分散した
 で説明したように、直接転送した場合より、他のトンネル終端点を経由したほうが遅延が小さくなる場合がある。
 VXLANはこのような経路が存在した場合でも、それを検知する仕組みが存在しないため、イーサネットフレームの転送は
 必ず宛先のトンネル終端点に直接行う。そのため、拡張されたLayer 2ネットワークの遅延は最小限とならない。
-
-\subsection{N2N}
-\label{rw:n2n}
 
 \begin{figure}
 	\begin{center}
@@ -220,7 +189,7 @@ Supernodeを経由する。そのため、トンネル終端点からSupernode�
 また、Layer 2ネットワークに参加しているトンネル終端点の管理はSupernodeが行なっている。そのため、
 Supernodeで障害が発生した場合、拡張されたLayer 2ネットワークが完全に利用できなくなってしまうという問題がある。
 
-\section{関連研究の比較}
+\section{Swiftコンパイラの構成}
 \label{background:korekara}
 
 本節では、~\ref{rw:pointtopoint}節、~\ref{rw:pointtomulti}節で説明したLayer 2ネットワーク拡張技術について、
@@ -277,13 +246,9 @@ Layer 2ネットワークで動作するサービスの遅延によるパフォ�
 管理と一部イーサネットフレームの転送を行なっているため、Supernodeが設置されている拠点で障害が発生すると、
 Layer 2ネットワークで一切通信ができなくなる、という問題がある。
 
-%\begin{figure}
-%	\begin{center}
-%		\includegraphics[scale=0.60]{./img/leontopology}
-%		\caption{求められるLayer 2ネットワーク拡張技術}
-%		\label{img:reqtopology}
-%	\end{center}
-%\end{figure}
+\section{Swiftコンパイラの基幹的機能}
+
+\section{Swiftコンパイラの課題}
 
 %%% Local Variables:
 %%% mode: japanese-latex
