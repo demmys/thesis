@@ -1,7 +1,7 @@
 \chapter{コンパイラのBootstrap}
 \label{explain-bootstrap}
 
-本章では、これまでにBootstrapを行ってきた高級汎用言語の事例を紹介し、それらの例からBootstrapにおける利点と課題について整理する。
+本章では、これまでにBootstrapを行ってきた高級汎用言語の事例を紹介し、それらの例からSwiftのBootstrapにおける利点と課題について整理する。
 
 \section{Bootstrapの事例}
 \label{explain-bootstrap:instance}
@@ -114,19 +114,61 @@ C\#は2000年にMicrosoft社より.Net Frameworkを利用するアプリケー�
 
 Microsoft社ではBootstrapを行うにあたってその性能に対して非常に注力しており、結果としてBootstrap後も想定していた充分によい性能が発揮できていると~\cite{roslyn-performance}内で述べている。
 
-\section{Bootstrapの利点}
+\section{SwiftにおけるBootstrapの利点}
 \label{explain-bootstrap:merit}
 
-\section{Bootstrapの課題}
+表~\ref{table:bootstrap-merit}に~\ref{explain-bootstrap:instance}節で述べた事例からBootstrapにおける利点をまとめ、SwiftのBootstrap時にそれらの利点が得られる可能性があるか否かをまとめた。
+
+\begin{table}[hb]
+    \begin{center}
+        \caption{Swiftでも享受できる可能性のあるBootstrapの利点}
+        \begin{tabular}{|m{10cm}|c|}
+            \hline
+            利点 & Swiftでの享受 \\
+            \hline
+            プログラムの記述やデバッグがより容易になる & ◯ \\
+            \hline
+            コンパイラの開発を行うために必要な知識が減る & ◯ \\
+            \hline
+            並列化やモジュール化、テスト、プロファイリングなどにおいて高いサポートが得られる & × \\
+            \hline
+            より柔軟で拡張性が高くなる & ? \\
+            \hline
+            コンパイラの各フローをライブラリとして提供できる & ? \\
+            \hline
+        \end{tabular}
+        \label{table:bootstrap-merit}
+    \end{center}
+\end{table}
+
+
+
+\section{SwiftにおけるBootstrapの課題}
 \label{explain-bootstrap:issue}
 
-\subsection{卵が先か鶏が先か問題}
+表~\ref{table:bootstrap-demerit}に~\ref{explain-bootstrap:instance}節で述べた事例からBootstrapにおいて発生しうる課題をまとめ、SwiftのBootstrap時にそれらの課題が問題となるかどうかをまとめた
 
-\subsection{新機能の追加}
-
-\subsection{依存フレームワークの対応}
-
-\subsection{性能の低下}
+\begin{table}[hb]
+    \begin{center}
+        \caption{SwiftのBootstrap時に発生しうる課題}
+        \begin{tabular}{|m{10cm}|M{3cm}|}
+            \hline
+            課題 & SwiftのBootstrap時に問題となるか \\
+            \hline
+            現行のコンパイラの開発に対する影響 & ◯ \\
+            \hline
+            過去のバージョンに対する依存 & ◯ \\
+            \hline
+            コンパイル速度の低下 & ? \\
+            \hline
+            他の低級言語への依存 & ◯ \\
+            \hline
+            他のプラットフォームへの移植の煩雑化 & ◯ \\
+            \hline
+        \end{tabular}
+        \label{table:bootstrap-demerit}
+    \end{center}
+\end{table}
 
 %%% Local Variables:
 %%% mode: japanese-latex
