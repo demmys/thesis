@@ -6,14 +6,88 @@
 \section{Bootstrapの事例}
 \label{explain-bootstrap:instance}
 
-近年Bootstrapを行った言語の中にはその際の目的や記述が資料として残っているものがある。
-ここではその中から異なる特徴を持つ3つの言語について注目し、各事例についてまとめる。
+BootstrapはFortranやLispのような比較的古い言語からGoやF\#のような比較的新しい言語まであらゆる時代の言語で行われており、その目的は様々である。
+本節では、その中から特に近年よく使用されており、先に他の言語による実装が十分な機能を持ってリリースされているにもかかわらずBootstrapを行った高級汎用言語である、Goのgo、PythonのPyPy、C\#の.Net Compiler Platformの3つの事例について紹介する。
 
-\subsection{Go}
+\subsection{Go - go}
 
-\subsection{Python}
+Goは2009年にGoogle社より発表された、構文の簡潔さと効率の高さ、並列処理のサポートを中心的な特徴とするプログラミング言語である。
+発表から6年を経た2015年にリリースされたバージョン1.5でBootstrapが行われ、それまでCで記述されていたコンパイラは完全にGoへと書き換わった。
 
-\subsection{C\#}
+\subsubsection{Bootstrapの目的}
+
+GoコンパイラのBootstrapの目的はCとGoの比較という形で~\cite{go-compiler-overhaul}内で以下のように述べられている。
+
+\begin{itemize}
+\item It is easier to write correct Go code than to write correct C code.
+\item It is easier to debug incorrect Go code than to debug incorrect C code.
+\item Work on a Go compiler necessarily requires a good understanding of Go. Implementing the compiler in C adds an unnecessary second requirement.
+\item Go makes parallel execution trivial compared to C.
+\item Go has better standard support than C for modularity, for automated rewriting, for unit testing, and for profiling.
+\item Go is much more fun to use than C.
+\end{itemize}
+
+主にGoを用いたコンパイラの開発がCを用いた場合よりも正確かつ楽になるという点を強調していることから、GoコンパイラのBootstrapの目的は主にコンパイラ開発フローの改善にあったということができるだろう。
+
+\subsubsection{Bootstrapの方法}
+
+Goコンパイラにおいては、~\cite{go-compiler-overhaul}に詳細なBootstrapのプロセスが記述されている。
+これによれば、Bootstrapはおおまかに以下の流れで行われた。
+
+\begin{enumerate}
+\item CからGoへのコードの自動変換器を作成する。
+\item 自動変換機をCで書かれたGoコンパイラに対して使用し、新しいコンパイラとする
+\item 新しいGoで書かれたコンパイラをGoにとって最適な記法へと修正する
+\item プロファイラの解析結果などを用いてGoで書かれたコンパイラを最適化する
+\item コンパイラのフロントエンドをGoで独自に開発されているものへと変更する
+\end{enumerate}
+
+この手法では、特にCからGoへの自動変換器を作成したことで、Cで書かれたコンパイラの開発を止めること無くGoへの変換の準備を行うことができた、という点が優れている。
+ただしこの手法を取れたのは、GoがCに近い機能を多く採用していたこと、CとGoが共に他の高級汎用言語と比べて少ない構文しか持っていなかったことに依るところが大きい。
+
+\subsubsection{Bootstrapの結果}
+
+Bootstrapが行われた結果、Goコンパイラのコンパイル速度が低下したことがバージョン1.5のリリースノート~\cite{go-15-release}で言及されている。
+これについて同リリースノートではCからGoへのコード変換がGoの性能を十分に引き出せないコードへの変換を行っているためだとしており、プロファイラの解析結果などを用いた最適化が続けられている。
+
+
+\subsection{Python - PyPy}
+
+Pythonは1991年に発表されたマルチパラダイムの動的型付け言語である。
+Pythonの最も有名な実装であるCPythonはC言語で書かれているが、そのCPythonと互換性があり、Bootstrapされた全く別のコンパイラが2007年にPyPyという名前でリリースされている。
+
+このPyPyではCPythonと比べてJITコンパイル機能を備えている点が最も大きな違いとなっている。
+
+\subsubsection{Bootstrapの目的}
+
+PyPyがBootstrapを行った目的はそのドキュメントである~\cite{pypy-doc}内の以下の記述から、特にPythonという言語の持つ柔軟性と、それによる拡張性の高さを利用するためであると読み取れる。
+
+\begin{quotation}
+This Python implementation is written in RPython as a relatively simple interpreter, in some respects easier to understand than CPython, the C reference implementation of Python. We are using its high level and flexibility to quickly experiment with features or implementation techniques in ways that would, in a traditional approach, require pervasive changes to the source code.
+\end{quotation}
+
+
+\subsubsection{Bootstrapの方法}
+
+PyPyのインタプリタは、PyPyと同時に開発されているRPythonというPythonのサブセット言語で実装されており、RPythonはRPythonで書かれたプログラムをCなどのより低レベルな言語に変換する役割を担う~\cite{rpython-doc}。
+
+そのため、RPythonの実行時の性能はPyPy自体の性能に一切関与せず、例えばPythonで記述されているRPythonがPyPyで実行されているかCPythonで実行されているかはPyPyの性能に何ら影響を与えない。
+
+このRPythonという変換器による仲介と、既存実装であるCPythonとの互換性がPyPyのBootstrapを可能にしている。
+
+
+\subsubsection{Bootstrapの結果}
+
+PyPyについては多くのベンチマークにおいて互換性のあるCPythonのバージョンに対してその実行速度が向上していることが示されている~\cite{speed-pypy-org}。
+これはPyPyが単にBootstrapを行っただけでなく、RPythonによってPyPyインタプリタをネイティブコードにコンパイルできるよう仲介した上で、JITコンパイル機能を付加したためである。
+
+このように、Bootstrapを行ったインタプリタを直接そのインタプリタで実行するのではなく、より高速に動作する形へ変換して実行することで、性能の低下を免れられ、それどころか独自の拡張によってそれまでの実装よりもより高い性能を得られる場合がある。
+ただし、この手法を取った場合はPyPyにおけるCのような他の低級言語への依存が残ってしまい、その可搬性に制限が生じてしまう可能性があるという点には注意する必要がある。
+
+
+\subsection{C\# - .Net Compiler Platform}
+
+C\#は
 
 \section{Bootstrapの利点}
 \label{explain-bootstrap:merit}
