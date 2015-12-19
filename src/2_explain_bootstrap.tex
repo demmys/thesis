@@ -11,7 +11,7 @@ BootstrapはFortranやLispのような比較的古い言語からGoやF\#のよ�
 
 \subsection{Go - go}
 
-Goは2009年にGoogle社より発表された、構文の簡潔さと効率の高さ、並列処理のサポートを中心的な特徴とするプログラミング言語である。
+Goは2009年にGoogle社より発表された、構文の簡潔さと効率の高さ、並列処理のサポートを中心的な特徴とする静的型付コンパイラ型言語である。
 発表から6年を経た2015年にリリースされたバージョン1.5でBootstrapが行われ、それまでCで記述されていたコンパイラは完全にGoへと書き換わった。
 
 \subsubsection{Bootstrapの目的}
@@ -45,6 +45,9 @@ Goコンパイラにおいては、~\cite{go-compiler-overhaul}に詳細なBoots
 この手法では、特にCからGoへの自動変換器を作成したことで、Cで書かれたコンパイラの開発を止めること無くGoへの変換の準備を行うことができた、という点が優れている。
 ただしこの手法を取れたのは、GoがCに近い機能を多く採用していたこと、CとGoが共に他の高級汎用言語と比べて少ない構文しか持っていなかったことに依るところが大きい。
 
+また、バージョン1.5以降のGoコンパイラにおいてはまずGoのバージョン1.4を用いてコンパイルし、その後にそのコンパイラを再度自分自身でビルドすることによって最新バージョンのコンパイラでコンパイルした最新バージョンのコンパイラを得る~\cite{go-bootstrap-plan}。
+この多少複雑な形によりバージョン1.5以降でもコンパイラをCから独立させることができるが、その代わりにGoのバージョン1.4に依存し続ける点には注意しなくてはならない。
+
 \subsubsection{Bootstrapの結果}
 
 Bootstrapが行われた結果、Goコンパイラのコンパイル速度が低下したことがバージョン1.5のリリースノート~\cite{go-15-release}で言及されている。
@@ -53,7 +56,7 @@ Bootstrapが行われた結果、Goコンパイラのコンパイル速度が低
 
 \subsection{Python - PyPy}
 
-Pythonは1991年に発表されたマルチパラダイムの動的型付け言語である。
+Pythonは1991年に発表されたマルチパラダイムの動的型付けインタプリタ型言語である。
 Pythonの最も有名な実装であるCPythonはC言語で書かれているが、そのCPythonと互換性があり、Bootstrapされた全く別のコンパイラが2007年にPyPyという名前でリリースされている。
 
 このPyPyではCPythonと比べてJITコンパイル機能を備えている点が最も大きな違いとなっている。
@@ -87,7 +90,29 @@ PyPyについては多くのベンチマークにおいて互換性のあるCPyt
 
 \subsection{C\# - .Net Compiler Platform}
 
-C\#は
+C\#は2000年にMicrosoft社より.Net Frameworkを利用するアプリケーションの開発用に発表された、マルチパラダイムの静的型付けコンパイラ型言語である。
+2014年に同社はC++で記述されていたコンパイラのBootstrapを行い、Visual Basic .NET と合わせてコンパイラ中の各モジュールをAPIによって外部から利用できるようにした.NET Compiler Platformをプレビュー版としてリリースした。
+その後2015年にはVisual Studio 2015における標準のC\#コンパイラとして.NET Compiler Platformを採用するようになっている。
+
+\subsubsection{Bootstrapの目的}
+
+.NET Compiler Platformはコンパイラの構文解析や参照解決、フロー解析などの各ステップを独立したAPIとして提供している~\cite{roslyn-doc}。
+これにより、例えばVisual StudioなどのIDEはこれらのAPIを使用することで、いちからC\#のパーサを構築すること無くシンタックスハイライトや定義箇所の参照機能を提供できる。
+そうしたライブラリ的機能をスムーズに利用できるようにするためには、.NET Compiler Platform自体がそれを利用するVisual Studioの拡張などと同様の言語で提供されている必要があった。
+
+その結果、.NET Compiler PlatformはC\#コンパイラをC\#、Visual Basic .NETをVisual Basic .NETで記述するBootstrapの形式で開発することとなっている。
+
+\subsubsection{Bootstrapの方法}
+
+.NET Compiler PlatformはVisual Studio 2013以前に使用されていたVisual C\#とは独立して開発され、Visual Studio 2013に採用されていたC\# 5の次期バージョンであるC\# 6の実装となっていた。
+そのため、.NET Compiler Platformの開発においてVisual C\#に対する大きな変更などは行われておらず、全ての新機能を.NET Compiler Platformのみに対して適用するだけで事足りている。
+
+また、.NET Compiler Platformの最新版はVisual Studioの最新版とともにバイナリ形式で配布されることが前提となっており、公開されているソースコードからビルドを行う場合でも配布されているコンパイラを使用する。
+そのため、配布されているVisual Studioが実行可能なプラットフォーム以外で.NET Compiler Platformを使用するためにはそれを実行可能な環境でクロスコンパイルするか.NET Compiler Platform以外のC\#コンパイラを用いてコンパイルする以外に方法がないが、その明確な手立ては示されていない~\cite{roslyn-cross-platform}。
+
+\subsubsection{Bootstrapの結果}
+
+Microsoft社ではBootstrapを行うにあたってその性能に対して非常に注力しており、結果としてBootstrap後も想定していた充分によい性能が発揮できていると~\cite{roslyn-performance}内で述べている。
 
 \section{Bootstrapの利点}
 \label{explain-bootstrap:merit}
