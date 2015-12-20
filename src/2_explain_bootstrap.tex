@@ -154,20 +154,15 @@ Swiftはコンパイラ型言語であるため、よほど特殊な方法を採
 
 並列化やモジュール化、テスト、プロファイリングに対するサポートはSwiftとC++の間で同等か、Swiftは特にMac OS X以外のプラットフォームにおける各機能のサポートが不十分なため、C++の方に分配が上がる可能性が高い。
 
+~\ref{introduction:background}節でも述べたように、言語の柔軟性および拡張性にはその可読性が大きく影響することが~\cite{elshoff}によって示されているため、これがSwiftにおいても利点となるかどうかは可読性が向上するかどうかという本研究の評価によって判断することができる。
+
 ~\ref{explain-bootstrap:instance:csharp}節で挙げた.NET Compiler Platformのようにコンパイラの各フローをライブラリとして提供することは設計次第で可能だろう。
 しかし、現状のSwiftにはC\#に対するVisual Studioのようなその言語で記述されたIDEや言語のためのツールなどは存在しておらず、そのAPIをSwiftで提供したとしても、特筆すべきほどの利点にはなり得ない可能性が高い。
-
-最後に、言語の柔軟性と拡張性だが、これについてはSwiftとC++の言語仕様を見比べているだけでは判断できない。
-採用しているプログラミングパラダイムや構文の種類であればC++はSwiftを上回っているが、ボイラープレートが多く1つの変更によって修正しなくてはならない箇所が増えたり、逆にボイラープレートを無くすために特殊な構文を駆使することで拡張性を損なったりすることもある。
-それに対して利用可能な機能の種類が少ないSwiftでは、そもそもC++では可能な拡張を取り入れられない可能性がある。
-
-この点について完全な結論を得ることは難しいが、コンパイラの一部分でも実装を比較することができれば、より具体的な予想を行うことは可能である。
-本研究では実際に実装されたSwiftによるSwiftコンパイラと現行のC++によるSwiftコンパイラのソースコードの行数の比較から、このメリットを得られるかどうかに関するある程度の判断材料が得られることを示す。
 
 \section{SwiftにおけるBootstrapの課題}
 \label{explain-bootstrap:issue}
 
-表~\ref{table:bootstrap-demerit}に~\ref{explain-bootstrap:instance}節で述べた事例からBootstrapにおいて発生しうる課題をまとめ、SwiftのBootstrap時にそれらの課題が問題となるかどうかをまとめた
+表~\ref{table:bootstrap-demerit}に~\ref{explain-bootstrap:instance}節で述べた事例からBootstrapにおいて発生しうる課題をまとめ、SwiftのBootstrap時にそれらの課題が問題となるかどうかをまとめた。
 
 \begin{table}[hb]
     \begin{center}
@@ -202,11 +197,10 @@ Swiftの言語仕様は日々メーリングリストで改善のための議論
 この問題は~\ref{explain-bootstrap:instance:csharp}節で述べた.NET Compiler Platformのようにコンパイラの配布の基本をバイナリ形式とすることで解決できる。
 ただし、その場合は.NET Compiler Platformと同様に他のプラットフォームへの移植の煩雑化という問題とのトレードオフに陥る点には注意しなくてはならない。
 
+コンパイル速度の低下は~\ref{explain-bootstrap:instance:go}節にあるGoのように変換器を使用しなかったとしても起こりうる可能性があるが、~\ref{explain-bootstrap:instance:csharp}節にある.NET Compiler Platformの事例のようにそのパフォーマンス改善に注力することで十分な性能を得られる可能性も等しくある。
+この結果を形式的な議論から導くことは難しいが、本研究で可読性の評価に用いる構文解析器は~\ref{introduction:purpose}節で示した構文解析器の比較が可読性が向上したかどうかの検証に使用できるということと同じ理由で、その実行速度やメモリ使用量を比較し、その変化を判断するために使用できる。
+
 他の低級言語への依存は、~\ref{explain-bootstrap:merit}節でも述べたようにSwift自体がコンパイラ型言語であるため、起こりづらいと考えられる。
-
-そして最後に、コンパイル速度の低下は~\ref{explain-bootstrap:instance:go}節にあるGoのように変換器を使用しなかったとしても起こりうる可能性があるが、~\ref{explain-bootstrap:instance:csharp}節にある.NET Compiler Platformの事例のようにそのパフォーマンス改善に注力することで十分な性能を得られる可能性も等しくある。
-
-本研究では、この点を明らかにするためにSwiftで書かれたSwiftコンパイラと現行のC++によるSwiftコンパイラの実行速度と実行時のメモリ使用量を比較し、Bootstrapを行った際にコンパイラの性能がどう変化し、どういった箇所に性能の低下や向上が起こりうるかを示す。
 
 %%% Local Variables:
 %%% mode: japanese-latex
