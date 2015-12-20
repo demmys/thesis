@@ -1,11 +1,39 @@
 \chapter{評価}
 \label{evaluation}
 
+本章では、~\ref{treeswift}章で説明したTreeSwiftを用いた現行のSwiftコンパイラとの比較評価の方法とその結果について述べる。
+
+
 \section{評価概要}
 
-\section{構文解析における性能差}
+評価の目的は~\ref{explain-bootstrap:merit}節および~\ref{explain-bootstrap:issue}節で述べたSwiftにおけるBootstrapのメリットと課題の内、言語仕様からだけでは判断のつかなかった点を考察する材料を集め、有意義な考察を得ることである。
+そのために、本研究では表~\ref{table:evaluation-items}に示す3種類の比較を行う。
 
-\section{ソースコードの比較}
+\begin{table}[hb]
+    \begin{center}
+        \caption{評価のための比較項目}
+        \begin{tabular}{|m{5cm}|m{10cm}|}
+            \hline
+            ソースコードの行数 & 各コンパイラのソースコードの内、ファイルを読み込み、字句解析および構文解析を行い、ASTを生成するまでに実行されるプログラムを記述した部分からエラー分を定義している箇所以外を抜き出し、その行数を計測・比較する。 \\
+            \hline
+            構文解析の実行時間 & Swiftの異なる構文を使用した複数のプログラムを各コンパイラでコンパイルし、その構文解析にかかる時間を各コンパイラの構文解析開始箇所および終了箇所に埋め込まれた時間取得プログラムの返す時間の差分によって測定・比較する。 \\
+            \hline
+            構文解析時の使用メモリ量 & Swiftの異なる構文を使用した複数のプログラムをプロファイラによってプロファイリングしながら各コンパイラでコンパイルし、その構文解析終了時点でプログラムを強制終了することで、構文解析完了までの間で同時に確保したメモリの最大量を測定・比較する。 \\
+            \hline
+        \end{tabular}
+        \label{table:evaluation-items}
+    \end{center}
+\end{table}
+
+% 各項目がなぜ必要であるかの説明
+
+\section{計測}
+
+\subsection{ソースコードの行数}
+
+\subsection{構文解析の実行時間}
+
+\subsection{構文解析時の使用メモリ量}
 
 \section{考察}
 

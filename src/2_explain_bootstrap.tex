@@ -7,9 +7,10 @@
 \label{explain-bootstrap:instance}
 
 BootstrapはFortranやLispのような比較的古い言語からGoやF\#のような比較的新しい言語まであらゆる時代の言語で行われており、その目的は様々である。
-本節では、その中から特に近年よく使用されており、先に他の言語による実装が十分な機能を持ってリリースされているにもかかわらずBootstrapを行った高級汎用言語である、Goのgo、PythonのPyPy、C\#の.Net Compiler Platformの3つの事例について紹介する。
+本節では、その中から特に近年よく使用されており、先に他の言語による実装が十分な機能を持ってリリースされているにもかかわらずBootstrapを行った高級汎用言語である、Goのgo、PythonのPyPy、C\#の.NET Compiler Platformの3つの事例について紹介する。
 
 \subsection{Go - go}
+\label{explain-bootstrap:instance:go}
 
 Goは2009年にGoogle社より発表された、構文の簡潔さと効率の高さ、並列処理のサポートを中心的な特徴とする静的型付コンパイラ型言語である。
 発表から6年を経た2015年にリリースされたバージョン1.5でBootstrapが行われ、それまでCで記述されていたコンパイラは完全にGoへと書き換わった。
@@ -55,6 +56,7 @@ Bootstrapが行われた結果、Goコンパイラのコンパイル速度が低
 
 
 \subsection{Python - PyPy}
+\label{explain-bootstrap:instance:python}
 
 Pythonは1991年に発表されたマルチパラダイムの動的型付けインタプリタ型言語である。
 Pythonの最も有名な実装であるCPythonはC言語で書かれているが、そのCPythonと互換性があり、Bootstrapされた全く別のコンパイラが2007年にPyPyという名前でリリースされている。
@@ -88,9 +90,10 @@ PyPyについては多くのベンチマークにおいて互換性のあるCPyt
 ただし、この手法を取った場合はPyPyにおけるCのような他の低級言語への依存が残ってしまい、その可搬性に制限が生じてしまう可能性があるという点には注意する必要がある。
 
 
-\subsection{C\# - .Net Compiler Platform}
+\subsection{C\# - .NET Compiler Platform}
+\label{explain-bootstrap:instance:csharp}
 
-C\#は2000年にMicrosoft社より.Net Frameworkを利用するアプリケーションの開発用に発表された、マルチパラダイムの静的型付けコンパイラ型言語である。
+C\#は2000年にMicrosoft社より.NET Frameworkを利用するアプリケーションの開発用に発表された、マルチパラダイムの静的型付けコンパイラ型言語である。
 2014年に同社はC++で記述されていたコンパイラのBootstrapを行い、Visual Basic .NET と合わせてコンパイラ中の各モジュールをAPIによって外部から利用できるようにした.NET Compiler Platformをプレビュー版としてリリースした。
 その後2015年にはVisual Studio 2015における標準のC\#コンパイラとして.NET Compiler Platformを採用するようになっている。
 
@@ -114,6 +117,7 @@ C\#は2000年にMicrosoft社より.Net Frameworkを利用するアプリケー�
 
 Microsoft社ではBootstrapを行うにあたってその性能に対して非常に注力しており、結果としてBootstrap後も想定していた充分によい性能が発揮できていると~\cite{roslyn-performance}内で述べている。
 
+
 \section{SwiftにおけるBootstrapの利点}
 \label{explain-bootstrap:merit}
 
@@ -134,14 +138,31 @@ Microsoft社ではBootstrapを行うにあたってその性能に対して非�
             \hline
             より柔軟で拡張性が高くなる & ? \\
             \hline
-            コンパイラの各フローをライブラリとして提供できる & ? \\
+            コンパイラの各フローをライブラリとして提供できる & × \\
             \hline
         \end{tabular}
         \label{table:bootstrap-merit}
     \end{center}
 \end{table}
 
+Swiftで記述されたプログラムは現行のコンパイラで使用されているC++で記述されたものと比較して、記述やデバッグが容易になる可能性が高い。
+詳細は~\ref{explain-swift}章で述べているが、メモリの管理を自動的に行うARC方式や強力な型推論と型検査はC++で必要となる冗長な記述を省略し、多くのエラーをコンパイル時に発見する。
+ただし、飽くまでもこれはプログラムの記述の容易さだけに関する議論であり、~\ref{explain-bootstrap:instance:go}節で見たように、より簡単な記述で同等の性能が得られるとは限らないという点に注意されたい。
 
+コンパイラの開発を行うために必要な知識が減るという点は~\ref{explain-bootstrap:instance:python}節で述べたPyPyのような形でなければほとんど全てのBootstrapに対して有効である。
+Swiftはコンパイラ型言語であるため、よほど特殊な方法を採用しない限りはこのメリットを享受できると考えられる。
+
+並列化やモジュール化、テスト、プロファイリングに対するサポートはSwiftとC++の間で同等か、Swiftは特にMac OS X以外のプラットフォームにおける各機能のサポートが不十分なため、C++の方に分配が上がる可能性が高い。
+
+~\ref{explain-bootstrap:instance:csharp}節で挙げた.NET Compiler Platformのようにコンパイラの各フローをライブラリとして提供することは設計次第で可能だろう。
+しかし、現状のSwiftにはC\#に対するVisual Studioのようなその言語で記述されたIDEや言語のためのツールなどは存在しておらず、そのAPIをSwiftで提供したとしても、特筆すべきほどの利点にはなり得ない可能性が高い。
+
+最後に、言語の柔軟性と拡張性だが、これについてはSwiftとC++の言語仕様を見比べているだけでは判断できない。
+採用しているプログラミングパラダイムや構文の種類であればC++はSwiftを上回っているが、ボイラープレートが多く1つの変更によって修正しなくてはならない箇所が増えたり、逆にボイラープレートを無くすために特殊な構文を駆使することで拡張性を損なったりすることもある。
+それに対して利用可能な機能の種類が少ないSwiftでは、そもそもC++では可能な拡張を取り入れられない可能性がある。
+
+この点について完全な結論を得ることは難しいが、コンパイラの一部分でも実装を比較することができれば、より具体的な予想を行うことは可能である。
+本研究では実際に実装されたSwiftによるSwiftコンパイラと現行のC++によるSwiftコンパイラのソースコードの行数の比較から、このメリットを得られるかどうかに関するある程度の判断材料が得られることを示す。
 
 \section{SwiftにおけるBootstrapの課題}
 \label{explain-bootstrap:issue}
@@ -161,7 +182,7 @@ Microsoft社ではBootstrapを行うにあたってその性能に対して非�
             \hline
             コンパイル速度の低下 & ? \\
             \hline
-            他の低級言語への依存 & ◯ \\
+            他の低級言語への依存 & × \\
             \hline
             他のプラットフォームへの移植の煩雑化 & ◯ \\
             \hline
@@ -169,6 +190,23 @@ Microsoft社ではBootstrapを行うにあたってその性能に対して非�
         \label{table:bootstrap-demerit}
     \end{center}
 \end{table}
+
+Swiftの言語仕様は日々メーリングリストで改善のための議論が行われており、既に次期バージョンである3.0での破壊的な変更も定まっているように、まだまだ安定していない。
+そのため、~\ref{explain-bootstrap:instance:csharp}節で挙げたC\#のように全く別のプロジェクトとしてBootstrapされたSwiftコンパイラを作成する場合には、現行のコンパイラとBootstrapしているコンパイラの両方のメンテナンスコストが非常に高くなってしまう。
+これを防ぐためにはBootstrapのプロセスにおいてコンパイラへの大きな仕様変更などを行わないようにしなくてはならず、現行のコンパイラの開発に対する影響は避けられなくなってしまう。
+なお、~\ref{explain-bootstrap:instance:go}節で述べたGoの例のようにC++からSwiftへの変換器を作成する形式は現実的ではない。
+なぜならば、C++とSwiftは互いに言語仕様が複雑かつ多様であり、かつSwiftの言語仕様は先述の通り破壊的に変更されているため、その変換器を作成するためのコストはBootstrapによって得られるメリットよりも格段に大きくなる可能性が高いからである。
+
+過去のバージョンに対する依存は、~\ref{explain-bootstrap:instance:go}節で述べたGoのような方法を取れば避けられない課題である。
+かつ、現状のSwiftにおいてはバージョン間で破壊的な変更があるため、それがコンパイラの機能を大きく制限してしまう可能性が高い。
+この問題は~\ref{explain-bootstrap:instance:csharp}節で述べた.NET Compiler Platformのようにコンパイラの配布の基本をバイナリ形式とすることで解決できる。
+ただし、その場合は.NET Compiler Platformと同様に他のプラットフォームへの移植の煩雑化という問題とのトレードオフに陥る点には注意しなくてはならない。
+
+他の低級言語への依存は、~\ref{explain-bootstrap:merit}節でも述べたようにSwift自体がコンパイラ型言語であるため、起こりづらいと考えられる。
+
+そして最後に、コンパイル速度の低下は~\ref{explain-bootstrap:instance:go}節にあるGoのように変換器を使用しなかったとしても起こりうる可能性があるが、~\ref{explain-bootstrap:instance:csharp}節にある.NET Compiler Platformの事例のようにそのパフォーマンス改善に注力することで十分な性能を得られる可能性も等しくある。
+
+本研究では、この点を明らかにするためにSwiftで書かれたSwiftコンパイラと現行のC++によるSwiftコンパイラの実行速度と実行時のメモリ使用量を比較し、Bootstrapを行った際にコンパイラの性能がどう変化し、どういった箇所に性能の低下や向上が起こりうるかを示す。
 
 %%% Local Variables:
 %%% mode: japanese-latex
