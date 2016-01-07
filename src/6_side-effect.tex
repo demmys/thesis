@@ -1,13 +1,15 @@
 \chapter{事例からみるSelf-host化の副作用}
-\label{explain-bootstrap}
+\label{side-effect}
 
-本章では、これまでにBootstrapを行ってきた高級汎用言語の事例を紹介し、それらの例からSwiftのBootstrapにおける利点と課題について整理する。
+~\ref{readability:discussion}節で述べたように、Self-host化はコンパイラに対して可読性の向上以外の様々な影響を与えている可能性がある。
+そこで本章では、これまでにBootstrapを行ってきた高級汎用言語の事例を紹介し、それらの例からSwiftのSelf-host化において発生しうる可読性の向上以外の作用について整理する。
 
 \section{Bootstrapの事例}
 \label{explain-bootstrap:instance}
 
 BootstrapはFortranやLispのような比較的古い言語からGoやF\#のような比較的新しい言語まであらゆる時代の言語で行われており、その目的は様々である。
 本節では、その中から特に近年よく使用されており、先に他の言語による実装が十分な機能を持ってリリースされているにもかかわらずBootstrapを行った高級汎用言語である、Goのgo、PythonのPyPy、C\#の.NET Compiler Platformの3つの事例について紹介する。
+なお、本節でSelf-host化ではなくBootstrap化を行った言語を対象としているのは、~\ref{introduction:background}節で述べたのと同様にSelf-host化だけを行っている言語にはコンパイラの大部分を書き換えているものと一部分だけを書き換えているものだけがあり、千疋が難しいためである。
 
 \subsection{Go - go}
 \label{explain-bootstrap:instance:go}
@@ -118,8 +120,8 @@ C\#は2000年にMicrosoft社より.NET Frameworkを利用するアプリケー�
 Microsoft社ではBootstrapを行うにあたってその性能に対して非常に注力しており、結果としてBootstrap後も想定していた充分によい性能が発揮できていると~\cite{roslyn-performance}内で述べている。
 
 
-\section{SwiftにおけるBootstrapの利点}
-\label{explain-bootstrap:merit}
+\section{SwiftにおけるSelf-host化の副作用}
+\label{side-effect:swift}
 
 表~\ref{table:bootstrap-merit}に~\ref{explain-bootstrap:instance}節で述べた事例からBootstrapにおける利点をまとめ、SwiftのBootstrap時にそれらの利点が得られる可能性があるか否かをまとめた。
 
@@ -158,9 +160,6 @@ Swiftはコンパイラ型言語であるため、よほど特殊な方法を採
 
 ~\ref{explain-bootstrap:instance:csharp}節で挙げた.NET Compiler Platformのようにコンパイラの各フローをライブラリとして提供することは設計次第で可能だろう。
 しかし、現状のSwiftにはC\#に対するVisual Studioのようなその言語で記述されたIDEや言語のためのツールなどは存在しておらず、そのAPIをSwiftで提供したとしても、特筆すべきほどの利点にはなり得ない可能性が高い。
-
-\section{SwiftにおけるBootstrapの課題}
-\label{explain-bootstrap:issue}
 
 表~\ref{table:bootstrap-demerit}に~\ref{explain-bootstrap:instance}節で述べた事例からBootstrapにおいて発生しうる課題をまとめ、SwiftのBootstrap時にそれらの課題が問題となるかどうかをまとめた。
 
@@ -201,6 +200,8 @@ Swiftの言語仕様は日々メーリングリストで改善のための議論
 この結果を形式的な議論から導くことは難しいが、本研究で可読性の評価に用いる構文解析器は~\ref{introduction:purpose}節で示した構文解析器の比較が可読性が向上したかどうかの検証に使用できるということと同じ理由で、その実行速度やメモリ使用量を比較し、その変化を判断するために使用できる。
 
 他の低級言語への依存は、~\ref{explain-bootstrap:merit}節でも述べたようにSwift自体がコンパイラ型言語であるため、起こりづらいと考えられる。
+
+\section{性能の差の検証方法}
 
 %%% Local Variables:
 %%% mode: japanese-latex

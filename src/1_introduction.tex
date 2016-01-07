@@ -15,9 +15,8 @@
 このような状況の変化によって、Swiftコンパイラにはこれまで強く求められていなかったある特徴が求められるようになっている。
 それは、Swiftコンパイラのソースコード自体における高い可読性である。
 
-プログラムに対する拡張や修正の効率は、そのプログラムの可読性に大きな影響を受けることがElshoffらによる~\cite{elshoff}で言及されている。
+プログラムに対する拡張や修正の効率が、そのプログラムの可読性に大きな影響を受けることはElshoff~\cite{elshoff}で言及されている。
 また、コードレビューのようなプロセスでは、プログラムにおける実行速度などの性能の高さではなくコードの読みやすさによってその効率が左右されることが明らかである。
-
 これらのことから、以前はSwiftコンパイラについてよく知る極小数のメンバーによって開発が行われていたために顕著化していなかった高い可読性に対する要求が、今後は高まっていくであろうと考えられる。
 
 一方、Swift以外の汎用言語のコンパイラにおいてはそのソースコードの可読性を高めることを目的の内の1つとして、コンパイラをそのコンパイル対象の言語自体で開発するSelf-host化を行っている例がよく見られる。
@@ -26,80 +25,64 @@
 なお、BootstrapとはSelf-host化によってコンパイラのソースコードから他言語への依存を排除し、以降の新しいバージョンのコンパイラをそのコンパイラ自身でコンパイルできるようにすることを指す。
 単にSelf-host化だけが行われている場合はコンパイラ中のコンパイル対象言語で記述された箇所がごく僅かである場合もあるため、表~\ref{table:bootstrapping-languages}ではBootstrap化しているかどうかについてまとめている。
 
-表~\ref{table:bootstrapping-languages}中の20言語の内だけでもBootstrapを採用しているものが8言語あり、 その中に性能の問題からコンパイラ用の言語として採用されづらいインタプリタ型言語なども含まれていることを考慮すれば、かなりの言語がSelf-host化されていることが分かる。
+表~\ref{table:bootstrapping-languages}中の20言語の内だけでもBootstrapを採用しているものが7言語あり、 その中に性能の問題からコンパイラ用の言語として採用されづらいインタプリタ型言語なども含まれていることを考慮すれば、かなりの言語がSelf-host化されていることが分かる。
 
 しかし、SwiftのSelf-host化についてSwiftコンパイラのレポジトリ内に記載されているFAQ~\cite{swift-faq}では、Self-host化した際に言語環境を用意するプロセスが煩雑化すること、現時点ではSwiftにコンパイラ開発用の特徴を追加するよりも汎用言語としての特徴追加を優先したいことから、短期的にはSelf-host化を行う予定はないと述べられている。
 
 \begin{table}[hb]
     \begin{center}
         \caption{知名度の高いプログラミング言語のBootstrap状況}
-        \begin{tabular}{|c|c|c|c|}
+        \begin{tabular}{|c|c|c|m{4.5cm}|}
             \hline
-            順位 & 言語名 & コンパイラ名 & Bootstrap状況 \\
+            順位 & 言語名 & Bootstrapされているか & Bootstrapされている主要コンパイラ \\
             \hline
-            1 & Java & javac & N (C, C++?) \\
+            1 & Java & × & - \\
             \hline
-            1 & Java & OpenJDK & N (C++, Java) \\
+            2 & C & × & - \\
             \hline
-            2 & C & gcc & N (C++) \\
+            3 & C++ & ◯ & clang, gcc, Microsoft Visual C++ \\
             \hline
-            2 & C & clang & N (C++) \\
+            4 & Python & ◯ & PyPy \\
             \hline
-            3 & C++ & gcc & Y \\
+            5 & C\# & ◯ & .NET Compiler Platform \\
             \hline
-            3 & C++ & clang & Y \\
+            6 & PHP & × & - \\
             \hline
-            3 & C++ & Microsoft Visual C++ & Y \\
+            7 & Visual Basic .NET & ◯ & .NET Compiler Platform \\
             \hline
-            4 & Python & CPython & N (C) \\
+            8 & JavaScript & × & - \\
             \hline
-            4 & Python & PyPy & Y \\
+            9 & Perl & × & - \\
             \hline
-            5 & C\# & Microsoft Visual C\# & N (C++) \\
+            10 & Ruby & × & - \\
             \hline
-            5 & C\# & .NET Compiler Platform & Y \\
+            11 & Assembly Language & (高級言語でないため除外) & \\
             \hline
-            6 & PHP & Zend Engine & N (C) \\
+            12 & Visual Basic & × & - \\
             \hline
-            7 & Visual Basic .NET & Visual Studio & N (C++, C\#) \\
+            13 & Delphi/Object Pascal & ◯ & Free Pascal \\
             \hline
-            7 & Visual Basic .NET & .NET Compiler Platform & Y \\
+            14 & Swift & × & - \\
             \hline
-            8 & JavaScript & SpiderMonkey & N (C, C++) \\
+            15 & Objective-C & × & - \\
             \hline
-            8 & JavaScript & V8 & N (C++, JavaScript) \\
+            16 & MATLAB & (汎用言語でないため除外) & \\
             \hline
-            9 & Perl & perl & N (C) \\
+            17 & Pascal & × & - \\
             \hline
-            10 & Ruby & Ruby MRI & N (C) \\
+            18 & R & (汎用言語でないため除外) & \\
             \hline
-            12 & Visual Basic & Visual Studio & N (C++, C\#) \\
+            19 & PL/SQL & (汎用言語でないため除外) & \\
             \hline
-            13 & Delphi/Object Pascal & Delphi & N (?) \\
+            20 & COBOL & × & - \\
             \hline
-            13 & Delphi/Object Pascal & Free Pascal & Y \\
+            21 & Ada & ◯ & GNAT \\
             \hline
-            14 & Swift & swift & N (C++) \\
+            22 & Fortran & × & - \\
             \hline
-            15 & Objective-C & clang & N (C++) \\
+            23 & D & ◯ & DMD \\
             \hline
-            15 & Objective-C & gcc & N (C++) \\
-            \hline
-            17 & Pascal & Free Pascal & Y \\
-            \hline
-            17 & Pascal & GNU Pascal & N (C, Pascal) \\
-            \hline
-            20 & COBOL & GnuCOBOL & N (C, C++) \\
-            \hline
-            21 & Ada & GNAT & Y \\
-            \hline
-            22 & Fortran & GNU Fortran & N (C, C++) \\
-            \hline
-            22 & Fortran & Absoft Fortran Compiler & ? \\
-            \hline
-            23 & D & DMD & Y \\
-            \hline
-            24 & Groovy & groovy & N (Java, Groovy) \\
+            24 & Groovy & × & - \\
             \hline
         \end{tabular}
         \label{table:bootstrapping-languages}
@@ -126,29 +109,36 @@
 本研究ではSwiftコンパイラの可読性を現在のものよりも向上させることを目的とする。
 そのアプローチとして、Swiftで記述したSwiftコンパイラを実装し、そのソースコードの可読性を現行のSwiftコンパイラと比較することで、SwiftコンパイラのSelf-host化が可読性の向上に有効であることを示す。
 
-コンパイラのSelf-host化では、そのコンパイラの対象言語が最初に記述された言語よりも必ず後発のものとなるために各機能についてより高い表現力を持つ場合が多いこと、言語仕様中の一部の機能や構文については実際にその機能や構文を用いて実装することができることから、一般的に可読性が高まると期待できる。
+コンパイラのSelf-host化には大きく分けて3つの可読性を向上させうる特徴がある。
+まず1つ目は、コンパイラのコードをコンパイル対象の言語で記述できるという点である。
+これにより、ソースコードを読むために必要な知識が減るだけでなく、そのコードは間違いなくそのコンパイラの全開発者にとってより馴染み深いものとなる。
+次に2つ目は、対象言語が最初にそのコンパイラを記述した言語よりも必ず後発のものとなるために、より高級な構文や機能を保つ場合が多いという点である。
+より高級な構文や機能は開発者の理解を助け、可読性を向上させる可能性が高い。
+最後に3つ目は、言語仕様中の一部の機能や構文について実際にその機能や構文を用いて実装することができるという点である。
+これもその直感的な記述から、一般的に可読性が高まると期待できる。
 
-ただし、Swiftにおいては現行のコンパイラが既に多くの機能を持つ高級言語であるC++で記述されているために、その可読性の向上が自明ではない。
-そのため、本研究ではSwiftとC++の違いから可読性を決定する要因について慎重に検討し、可読性の比較評価には各コンパイラのソースコードの行数に基づく定量的な指標を使用する。
+さらに、Self-host化ではこれらのメリットをコンパイル対象の言語でそのコンパイラを記述し続ける限り継続的に享受できる。
+そのためSelf-host化によって、~\ref{introduction:issue}節で述べた時間経過に伴って可読性が維持できなくなっていくという問題や追加の手順によって開発者のコストを増大させてしまうという懸念なく、単純に可読性を向上させ、コンパイラの拡張や修正のコストを減少させられると期待することができる。
 
-また、コンパイラのSelf-host化はコンパイラのプログラムを書き換えるために可読性の向上だけでない様々な影響を与えうる。
+しかし、可読性を向上させうる特徴の内、後者2つについては必ずしも可読性を向上させるとは限らない点に注意する必要がある。
+実際、Swiftにおいては現行のコンパイラが既に多くの機能を持つ高級言語であるC++で記述されているために、それらの特徴による可読性の向上が自明ではない。
+
+そのため、本研究では実際にSelf-host化したSwiftコンパイラを実装した上で、SwiftとC++の違いからそれぞれのコンパイラのソースコードにおける可読性を決定する要因について慎重に検討し、各コンパイラのソースコードの行数に基づく定量的な指標を用いてその可読性を比較する。
+
+また、コンパイラのSelf-host化はコンパイラのプログラムを全て書き換えてしまうために、可読性の向上だけでない様々な影響を与えうる。
 その点について、本論文ではいくつかの事例と実装したコンパイラにおける性能の評価から考察し、実際にSelf-host化を行うにあたっての注意事項としてまとめる。
 
-% さらにBootstrap化は~\ref{introduction:issue}節で述べた手法と比較して、そのコンパイラで使用するプログラミング言語を変更することによる可読性の向上であるために今後更に異なる言語で書き直されないかぎりはその効用が持続し、かつコーディング規約のような追加の制限を設けないので、その可読性の向上がより単純にプログラムの拡張や修正のコストを減少させると期待することができる。
-% また、Bootstrapを行うことによってBootstrap前は必要としていたC++の知識が不要となるため、C++に対して馴染みの浅い一部のプログラマにとっては拡張や修正のコストを減少させられるということも期待できる。
-%
-% ただし、コンパイラのBootstrap化はコンパイラ全体に対して大きな変更を行うこととなるため、可読性の向上以外にも様々な影響を与える可能性が大いにあることには注意しておかなくてはならない。
-% 本論文ではそうした副作用も含めたBootstrap化の現実的な優位性について議論できるよう、他の言語におけるBootstrapの事例から可読性とは別の影響についてまとめ、それらがSwiftのBootstrap化においてどのような働きをしうるかについても考察していく。
 
 \section{本論文の構成}
 
 本論文における以降の構成は次の通りである。
 
-~\ref{explain-swift}章では本研究が着目するプログラミング言語Swiftとそのコンパイラの記述言語C++の差異についてまとめ、それら言語で記述されたプログラムの可読性の差を検証するための方法について説明する。
-~\ref{treeswift}章では現行のSwiftコンパイラとの比較対象となるSwiftで記述したSwiftコンパイラ「TreeSwift」の構成について述べ、現行のSwiftコンパイラとの比較を行うために必要な要件を満たしていることを確認する。
-~\ref{readability-evaluation}章では現行のSwiftコンパイラとTreeSwiftの構文解析器についてその可読性の差異を比較評価し、その結果について考察する。
-~\ref{explain-bootstrap}章では改めてコンパイラのSelf-host化についてSwift以外の言語の事例から可読性の向上以外の影響についてまとめ、それらがSwiftのSelf-host化においてどう作用しうるかを考察する。
-~\ref{performance-evaluation}章では~\ref{explain-bootstrap}章で上げる性能の低下というSelf-host化が抱えうる課題について、Swiftの事例において起こりうる影響をSwiftコンパイラとTreeSwiftの構文解析器における性能の比較から考察する。
+~\ref{differential}章では、本研究が着目するプログラミング言語Swiftとそのコンパイラの記述言語C++それぞれの特徴についてまとめ、可読性の差が生まれる原因となりうる差異について考察する。
+~\ref{methodology}章では、~\ref{differential}章で述べる言語の差異を根拠にSwiftとC++で記述されたコンパイラの可読性の差を検証するための方法について説明する。
+~\ref{implementation}章では、本研究で実装したSelf-host化されたSwiftコンパイラの設計について述べ、~\ref{methodology}章で示した検証を行うために十分な機能を有していることを示す。
+~\ref{readability}章では、実際に現行のコンパイラとSelf-host化されたコンパイラについて~\ref{methodology}章で述べる可読性の比較を行い、その結果について考察する。
+~\ref{side-effect}章では、Self-host化がもたらしうる可読性の向上以外の影響について他の言語における事例から考察し、特にその影響が自明でない性能の低下があるかどうかを知るための方法について述べる。
+~\ref{performance}章では、~\ref{side-effect}章で述べる方法で現行のコンパイラとSelf-host化されたコンパイラの性能の差異を比較し、その結果について考察する。
 ~\ref{conclusion}章では本研究の結論と今後の展望についてまとめる。
 
 %%% Local Variables:

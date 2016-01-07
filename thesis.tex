@@ -1,5 +1,6 @@
 %\documentclass[12pt,ascmac]{jreport}
 \documentclass[12pt]{jreport}
+\usepackage{comment}
 \usepackage{./sty/eclepsf}
 \usepackage{tascmac}
 \usepackage{tabularx}
@@ -105,12 +106,13 @@ pdfkeywords={1.Compiler, 2.Self-hosting, 3.Readability of Program, 4.Swift Progr
 \clearpage
 \pagenumbering{arabic}
 \input{src/1_introduction}
-\input{src/2_explain_swift}
-\input{src/3_treeswift}
-\input{src/4_readability_evaluation}
-\input{src/5_explain_bootstrap}
-\input{src/6_performance_evaluation}
-\input{src/7_conclusion}
+\input{src/2_differential}
+\input{src/3_methodology}
+\input{src/4_implementation}
+\input{src/5_readability}
+\input{src/6_side-effect}
+\input{src/7_performance}
+\input{src/8_conclusion}
 \input{src/acknowledgement}
 
 \renewcommand{\thechapter}{\Alph{chapter}}
