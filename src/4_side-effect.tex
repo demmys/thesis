@@ -11,6 +11,9 @@ BootstrapはFortranやLispのような比較的古い言語からGoやF\#のよ�
 本節では、その中から特に近年よく使用されており、先に他の言語による実装が十分な機能を持ってリリースされているにもかかわらずBootstrapを行った高級汎用言語である、Goのgo、PythonのPyPy、C\#の.NET Compiler Platformの3つの事例について紹介する。
 なお、本節でSelf-host化だけでなくBootstrapまで行った言語のみを対象としているのは、~\ref{introduction:background}節で述べたのと同様にSelf-host化だけを行っている言語にはコンパイラの大部分を書き換えているものと一部分だけを書き換えているものだけがあり、線引が難しいためである。
 
+また、Bootstrapにおいては新しいバージョンのコンパイラのソースコードをどのようにしてまだ存在していないその新しいバージョンのコンパイラ自身でコンパイルするか、というBootstrapにおける極めて一般的な問題が存在している。
+そのため本説では、各事例についてBootstrapを行う目的とBootstrapを行った結果に加え、どのようにしてBootstrapを行ったかについてもまとめることで、Swiftが将来的にBootstrapまで行った場合に発生しうる問題についても考察するための情報を提供する。
+
 \subsection{Go - go}
 \label{side-effect:instance:go}
 
@@ -123,7 +126,9 @@ Microsoft社ではBootstrapを行うにあたってその性能に対して非�
 \section{SwiftにおけるSelf-host化の副作用}
 \label{side-effect:swift}
 
-表~\ref{table:bootstrap-merit}に~\ref{side-effect:instance}節で述べた事例からBootstrapにおける利点をまとめ、SwiftのBootstrap時にそれらの利点が得られる可能性があるか否かをまとめた。
+\subsection{可読性の向上以外の副次的なメリット}
+
+まず、表~\ref{table:bootstrap-merit}に~\ref{side-effect:instance}節で述べた事例から~\ref{readability:idea}節で述べた可読性の向上に繋がる点以外のBootstrapにおける以外の利点をまとめ、SwiftがBootstrapを行った場合にそれらの利点が得られる可能性があるか否かをまとめた。
 
 \begin{table}[hb]
     \begin{center}
@@ -132,13 +137,7 @@ Microsoft社ではBootstrapを行うにあたってその性能に対して非�
             \hline
             利点 & Swiftでの享受 \\
             \hline
-            プログラムの記述やデバッグがより容易になる & ◯ \\
-            \hline
-            コンパイラの開発を行うために必要な知識が減る & ◯ \\
-            \hline
             並列化やモジュール化、テスト、プロファイリングなどにおいて高いサポートが得られる & × \\
-            \hline
-            より柔軟で拡張性が高くなる & ? \\
             \hline
             コンパイラの各フローをライブラリとして提供できる & × \\
             \hline
@@ -147,21 +146,20 @@ Microsoft社ではBootstrapを行うにあたってその性能に対して非�
     \end{center}
 \end{table}
 
-Swiftで記述されたプログラムは現行のコンパイラで使用されているC++で記述されたものと比較して、記述やデバッグが容易になる可能性が高い。
-詳細は~\ref{explain-swift}章で述べているが、メモリの管理を自動的に行うARC方式や強力な型推論と型検査はC++で必要となる冗長な記述を省略し、多くのエラーをコンパイル時に発見する。
-ただし、飽くまでもこれはプログラムの記述の容易さだけに関する議論であり、~\ref{side-effect:instance:go}節で見たように、より簡単な記述で同等の性能が得られるとは限らないという点に注意されたい。
 
-コンパイラの開発を行うために必要な知識が減るという点は~\ref{side-effect:instance:python}節で述べたPyPyのような形でなければほとんど全てのBootstrapに対して有効である。
-Swiftはコンパイラ型言語であるため、よほど特殊な方法を採用しない限りはこのメリットを享受できると考えられる。
+~\ref{side-effect:instance:go}節や~\ref{side-effect:instance:python}で見たように、各事例でも記述やデバッグが容易になったりより柔軟になり拡張性が高くなったりしているという評価があることは本研究のアプローチにおいても可読性を向上できると期待できる大きな根拠となる。
+また、~\ref{side-effect:instance:python}節ではSelf-host化を行っても必ずしも必要となるプログラミング言語の知識が減るとは限らないことが分かったが、Swiftはコンパイラ型言語であるため、よほど特殊な方法を採用しない限りはこのメリットを享受できると考えて差し支えない。
 
-並列化やモジュール化、テスト、プロファイリングに対するサポートはSwiftとC++の間で同等か、Swiftは特にMac OS X以外のプラットフォームにおける各機能のサポートが不十分なため、C++の方に分配が上がる可能性が高い。
-
-~\ref{introduction:background}節でも述べたように、言語の柔軟性および拡張性にはその可読性が大きく影響することが~\cite{elshoff}によって示されているため、これがSwiftにおいても利点となるかどうかは可読性が向上するかどうかという本研究の評価によって判断することができる。
+一方で、~\ref{side-effect:instance:go}節で上がっていたような並列化やモジュール化、テスト、プロファイリングに対するサポートはSwiftと現行のSwiftコンパイラ記述言語であるC++の間で同等か、Swiftは特にMac OS X以外のプラットフォームにおける各機能のサポートが未だ不十分なため、C++の方に分配が上がる可能性が高い。
 
 ~\ref{side-effect:instance:csharp}節で挙げた.NET Compiler Platformのようにコンパイラの各フローをライブラリとして提供することは設計次第で可能だろう。
 しかし、現状のSwiftにはC\#に対するVisual Studioのようなその言語で記述されたIDEや言語のためのツールなどは存在しておらず、そのAPIをSwiftで提供したとしても、特筆すべきほどの利点にはなり得ない可能性が高い。
 
-表~\ref{table:bootstrap-demerit}に~\ref{side-effect:instance}節で述べた事例からBootstrapにおいて発生しうる課題をまとめ、SwiftのBootstrap時にそれらの課題が問題となるかどうかをまとめた。
+
+\subsection{Self-host化によって想定されるデメリット}
+
+次に、表~\ref{table:bootstrap-demerit}に~\ref{side-effect:instance}節で述べた事例からBootstrapにおいて発生しうる課題をまとめ、SwiftがBootstrapを行った場合にそれらの課題が問題となるかどうかをまとめた。
+なお、ここではSelf-host化に限らずBootstrapまでを行った場合にのみ発生する課題についても考察しているが、これはコンパイラの基幹機能をSelf-host化したコンパイラでは一般的にBoostrapまで行っており、Swiftでもそうなることが予想されるため、意図的にSelf-host化だけを行った場合の課題にのみ絞り込まないようにしているためである。
 
 \begin{table}[hb]
     \begin{center}
@@ -196,12 +194,11 @@ Swiftの言語仕様は日々メーリングリストで改善のための議論
 この問題は~\ref{side-effect:instance:csharp}節で述べた.NET Compiler Platformのようにコンパイラの配布の基本をバイナリ形式とすることで解決できる。
 ただし、その場合は.NET Compiler Platformと同様に他のプラットフォームへの移植の煩雑化という問題とのトレードオフに陥る点には注意しなくてはならない。
 
-コンパイル速度の低下は~\ref{side-effect:instance:go}節にあるGoのように変換器を使用しなかったとしても起こりうる可能性があるが、~\ref{side-effect:instance:csharp}節にある.NET Compiler Platformの事例のようにそのパフォーマンス改善に注力することで十分な性能を得られる可能性も等しくある。
-この結果を形式的な議論から導くことは難しいが、本研究で可読性の評価に用いる構文解析器は~\ref{introduction:purpose}節で示した構文解析器の比較が可読性が向上したかどうかの検証に使用できるということと同じ理由で、その実行速度やメモリ使用量を比較し、その変化を判断するために使用できる。
-
 他の低級言語への依存は、~\ref{side-effect:merit}節でも述べたようにSwift自体がコンパイラ型言語であるため、起こりづらいと考えられる。
 
-\section{性能の差の検証方法}
+最後に、コンパイル速度の低下は~\ref{side-effect:instance:go}節にあるGoのように変換器を使用しなかったとしても起こりうる可能性があるが、~\ref{side-effect:instance:csharp}節にある.NET Compiler Platformの事例のようにそのパフォーマンス改善に注力することで十分な性能を得られる可能性も等しくある。
+この結果を事前に予測することは難しいが、本研究で可読性の評価に用いるコンパイラの一部についてその実行速度や最大メモリ使用量を比較することで、少なくとも現状の限られた条件下における性能の変化を知ることはできる。
+そのため本研究では、可読性の向上の評価に合わせてこの性能の評価も行う。
 
 %%% Local Variables:
 %%% mode: japanese-latex

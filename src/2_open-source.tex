@@ -6,13 +6,13 @@
 \section{オープンソースプロジェクトの特徴}
 \label{open-source:feature}
 
-オープンソースプロジェクトというプロジェクト形態についてどのようなプロジェクトでなければならないという制約などはないが、特に有名なオープンソースプロジェクトの定義がOpen Source Initiativeによって与えられている~\cite{opensource}。
+オープンソースプロジェクトというプロジェクト形態についてどのようなプロジェクトでなければならないという制約などはないが、特に多くのプロジェクトが従っているオープンソースプロジェクトの持つべき性質がOpen Source Initiativeによって定義されている~\cite{opensource}。
 表~\ref{table:open-source-definition}はそのオープンソースの定義をまとめたものである。
 
 \begin{table}[!hbtp]
     \begin{center}
         \caption{オープンソースの定義}
-        \begin{tabular}{|c|p{0.8\linewidth}|}
+        \begin{tabular}{|p{0.1\linewidth}|p{0.85\linewidth}|}
             \hline
             1 & そのソフトウェア全体を含むソフトウェアの販売・頒布を使用料を課すなどして制限しない \\
             \hline
@@ -74,19 +74,19 @@
     \begin{center}
         \caption{Raymondによるオープンソースプロジェクトの分類}
         \begin{listliketab}
-            \begin{tabular}{|c|p{0.8\linewidth}|}
-                \hline
-                形式 & 特徴 \\
-                \hline
-                \hline
-                伽藍形式 & \textbullet \ 中央集権的に開発方針などを指揮し、主な開発を担当する特定集団が存在する \\
-                & \textbullet \ 拡張や修正は開発方針に従って行われ、各リリースはよくチェックされる \\
-                \hline
-                バザール形式 & \textbullet \ 中心的な開発者が指揮者として与える影響は小さく、どの拡張や修正が実施されるかはコミュニティ全体の動向に左右される \\
-                & \textbullet \ リリースは変更が加わるごとに更新され、極端に言えばバグを含んだまま行われる \\
-                \hline
-            \end{tabular}
-            \label{table:cathedral-bazaar}
+        \begin{tabular}{|c|p{0.8\linewidth}|}
+            \hline
+            形式 & 特徴 \\
+            \hline
+            \hline
+            伽藍形式 & \textbullet \ 中央集権的に開発方針などを指揮し、主な開発を担当する特定集団が存在する \\
+            & \textbullet \ 拡張や修正は開発方針に従って行われ、各リリースはよくチェックされる \\
+            \hline
+            バザール形式 & \textbullet \ 中心的な開発者が指揮者として与える影響は小さく、どの拡張や修正が実施されるかはコミュニティ全体の動向に左右される \\
+            & \textbullet \ リリースは変更が加わるごとに更新され、極端に言えばバグを含んだまま行われる \\
+            \hline
+        \end{tabular}
+        \label{table:cathedral-bazaar}
         \end{listliketab}
     \end{center}
 \end{table}
@@ -105,22 +105,22 @@
     \begin{center}
         \caption{バザール形式のオープンソースプロジェクトの特徴}
         \begin{listliketab}
-            \begin{tabular}{|p{0.35\linewidth}|p{0.6\linewidth}|}
-                \hline
-                特徴を作る要因 & 特徴 \\
-                \hline
-                \hline
-                様々な人がプログラムを参照する & プログラムのあらゆる箇所に対して任意のタイミングで拡張提案・バグ報告が行われる \\
-                \hline
-                不特定多数のプログラマが開発に携わる & \textbullet \ プログラムのあらゆる箇所に対して任意のタイミングで拡張・修正が行われる \\
-                & \textbullet \ 様々なコーディングスタイルの拡張・修正実装が提案される \\
-                \hline
-                ソフトウェアを利用したソフトウェアが開発される & ソフトウェアの部分的な利用が試みられる \\
-                \hline
-                ソフトウェアの技術中立性が高まる & 様々なプラットフォームへの移植が試みられる \\
-                \hline
-            \end{tabular}
-            \label{table:bazaar-features}
+        \begin{tabular}{|p{0.35\linewidth}|p{0.6\linewidth}|}
+            \hline
+            特徴を作る要因 & 特徴 \\
+            \hline
+            \hline
+            様々な人がプログラムを参照する & プログラムのあらゆる箇所に対して任意のタイミングで拡張提案・バグ報告が行われる \\
+            \hline
+            不特定多数のプログラマが開発に携わる & \textbullet \ プログラムのあらゆる箇所に対して任意のタイミングで拡張・修正が行われる \\
+            & \textbullet \ 様々なコーディングスタイルの拡張・修正実装が提案される \\
+            \hline
+            ソフトウェアを利用したソフトウェアが開発される & ソフトウェアの部分的な利用が試みられる \\
+            \hline
+            ソフトウェアの技術中立性が高まる & 様々なプラットフォームへの移植が試みられる \\
+            \hline
+        \end{tabular}
+        \label{table:bazaar-features}
         \end{listliketab}
     \end{center}
 \end{table}
@@ -140,23 +140,21 @@
 \begin{table}[!hbtp]
     \begin{center}
         \caption{バザール形式でのオープンソース化に伴う変化}
-        \begin{listliketab}
-            \begin{tabular}{|p{0.25\linewidth}|p{0.35\linewidth}|p{0.35\linewidth}|}
-                \hline
-                起こる変化 & クローズドプロジェクトでの状況 & オープンソースプロジェクトでの状況 \\
-                \hline
-                \hline
-                拡張や修正の要求・実装が行われるかどうかを決定する要因の変化 & リソースが限られているため、一定の開発方針に従って拡張や修正の優先順位が決定する & ある拡張や修正がそのコストを差し引いても充分な興味を引くものであれば、充分なリソースによって実装されて統合される \\
-                \hline
-                コーディングスタイルの流動化 & 開発者へのコーディングスタイルの徹底が可能なので同じスタイルを維持することができる & 過去のコードとの統一性も踏まえられるものの、その時々で支持されたコーディングスタイルが用いられるため、スタイルが変動する \\
-                \hline
-                ソフトウェアの各部分におけるモジュール化 & ソフトウェアの利用先などをすべて把握することが可能なのでモジュール化する部分を限定できる & あらゆる箇所で様々な形でソフトウェアが部分的にも使用されうるため、様々な箇所で高いモジュール性が求められる \\
-                \hline
-                マルチプラットフォーム化の進行 & 対象とするプラットフォームを制限することができる & 各プラットフォームの熱心なユーザによってマルチプラットフォーム化が進められる \\
-                \hline
-            \end{tabular}
-            \label{table:open-source-change}
-        \end{listliketab}
+        \begin{tabular}{|p{0.25\linewidth}|p{0.35\linewidth}|p{0.35\linewidth}|}
+            \hline
+            起こる変化 & クローズドプロジェクトでの状況 & オープンソースプロジェクトでの状況 \\
+            \hline
+            \hline
+            拡張や修正の要求・実装が行われるかどうかを決定する要因の変化 & リソースが限られているため、一定の開発方針に従って拡張や修正の優先順位が決定する & ある拡張や修正がそのコストを差し引いても充分な興味を引くものであれば、充分なリソースによって実装されて統合される \\
+            \hline
+            コーディングスタイルの流動化 & 開発者へのコーディングスタイルの徹底が可能なので同じスタイルを維持することができる & 過去のコードとの統一性も踏まえられるものの、その時々で支持されたコーディングスタイルが用いられるため、スタイルが変動する \\
+            \hline
+            ソフトウェアの各部分におけるモジュール化 & ソフトウェアの利用先などをすべて把握することが可能なのでモジュール化する部分を限定できる & あらゆる箇所で様々な形でソフトウェアが部分的にも使用されうるため、様々な箇所で高いモジュール性が求められる \\
+            \hline
+            マルチプラットフォーム化の進行 & 対象とするプラットフォームを制限することができる & 各プラットフォームの熱心なユーザによってマルチプラットフォーム化が進められる \\
+            \hline
+        \end{tabular}
+        \label{table:open-source-change}
     \end{center}
 \end{table}
 
@@ -183,40 +181,36 @@
 \begin{table}[!hbtp]
     \begin{center}
         \caption{可読性を決定する要因と可読性との関係}
-        \begin{listliketab}
-            \begin{tabular}{|p{0.4\linewidth}|p{0.55\linewidth}|}
-                \hline
-                可読性を決定する要因 & 可読性との関係 \\
-                \hline
-                \hline
-                ソフトウェアの複雑性 & 複雑性が高いと可読性が下がる \\
-                \hline
-                ソフトウェアの対象とする問題や使用している手法に対するプログラム読者の知識 & 知識が多いと可読性が上がる \\
-                \hline
-            \end{tabular}
-            \label{table:readability-relation}
-        \end{listliketab}
+        \begin{tabular}{|p{0.4\linewidth}|p{0.55\linewidth}|}
+            \hline
+            可読性を決定する要因 & 可読性との関係 \\
+            \hline
+            \hline
+            ソフトウェアの複雑性 & 複雑性が高いと可読性が下がる \\
+            \hline
+            ソフトウェアの対象とする問題や使用している手法に対するプログラム読者の知識 & 知識が多いと可読性が上がる \\
+            \hline
+        \end{tabular}
+        \label{table:readability-relation}
     \end{center}
 \end{table}
 
 \begin{table}[!hbtp]
     \begin{center}
         \caption{ソフトウェアの複雑性に影響する要因}
-        \begin{listliketab}
-            \begin{tabular}{|p{0.6\linewidth}|p{0.2\linewidth}|p{0.2\linewidth}|}
-                \hline
-                影響を与える要因 & 影響の大きさ & 改善できる可能性 \\
-                \hline
-                \hline
-                ソフトウェアが対象とする問題 & 大きい & とても低い \\
-                \hline
-                ソフトウェアに使用するプログラミング言語・モデリング手法・設計手法 & 比較して大きい & 比較して低い \\
-                \hline
-                ソフトウェアの開発に参加する開発者の技術や知識 & 比較して小さい & 充分に高い \\
-                \hline
-            \end{tabular}
-            \label{table:complexity-elements}
-        \end{listliketab}
+        \begin{tabular}{|p{0.6\linewidth}|p{0.2\linewidth}|p{0.2\linewidth}|}
+            \hline
+            影響を与える要因 & 影響の大きさ & 改善できる可能性 \\
+            \hline
+            \hline
+            ソフトウェアが対象とする問題 & 大きい & とても低い \\
+            \hline
+            ソフトウェアに使用するプログラミング言語・モデリング手法・設計手法 & 比較して大きい & 比較して低い \\
+            \hline
+            ソフトウェアの開発に参加する開発者の技術や知識 & 比較して小さい & 充分に高い \\
+            \hline
+        \end{tabular}
+        \label{table:complexity-elements}
     \end{center}
 \end{table}
 
