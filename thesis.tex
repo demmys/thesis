@@ -4,12 +4,15 @@
 \usepackage{./sty/eclepsf}
 \usepackage{tascmac}
 \usepackage{tabularx}
+\usepackage{listliketab}
 \usepackage[longnamesfirst]{natbib}
 \usepackage[dvipdfmx]{graphics}
 \usepackage[dvipdfmx]{graphicx}
 \usepackage[dvipdfmx]{color}
 \usepackage{subfigure}
 \usepackage{alltt}
+\usepackage{here}
+\usepackage{afterpage}
 \usepackage{./sty/ncodeline}
 %\usepackage[dvipdfmx, colorlinks, breaklinks,%
 \usepackage[dvipdfmx, breaklinks,%
@@ -106,13 +109,12 @@ pdfkeywords={1.Compiler, 2.Self-hosting, 3.Readability of Program, 4.Swift Progr
 \clearpage
 \pagenumbering{arabic}
 \input{src/1_introduction}
-\input{src/2_differential}
-\input{src/3_methodology}
-\input{src/4_implementation}
-\input{src/5_readability}
-\input{src/6_side-effect}
-\input{src/7_performance}
-\input{src/8_conclusion}
+\input{src/2_open-source}
+\input{src/3_readability}
+\input{src/4_side-effect}
+\input{src/5_implementation}
+\input{src/6_evaluation}
+\input{src/7_conclusion}
 \input{src/acknowledgement}
 
 \renewcommand{\thechapter}{\Alph{chapter}}

@@ -1,0 +1,34 @@
+\chapter{評価}
+\label{evaluation}
+
+\section{ソースコード可読性の向上評価}
+
+\subsection{評価手法}
+
+* LOCをベースとする
+* エラー処理の違いが大きく出る可能性がある
+    * 実行可能な行からさらに実行した行のみを取り出して比較する
+    * 実行可能な行の内どれだけを対象にできているかを算出する
+    * 分岐を決定する文を除いた場合の行数も算出する
+* モジュール定義ファイルのパースには大きな差がでる可能性がある
+    * モジュールのパースやコンパイラオプションの処理などは対象に含めない
+
+\subsection{計測}
+
+\subsection{考察}
+
+
+\section{Self-host化に伴う副作用の評価}
+
+\subsection{評価手法}
+
+* 速度とメモリ使用量を計測する
+
+\subsection{計測}
+
+\subsection{考察}
+
+%%% Local Variables:
+%%% mode: japanese-latex
+%%% TeX-master: "../thesis"
+%%% End:
