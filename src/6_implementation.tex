@@ -1,9 +1,9 @@
 \chapter{Self-host化したSwiftコンパイラ「TreeSwift」の設計と実装}
 \label{implementation}
 
-本章では、本研究で実装するSelf-host化したSwiftコンパイラについて、~\ref{refinement:comperable}節における議論を元にその可読性の向上を評価するために必要な設計要件を明らかにし、それを元に行われた実装について説明する。
+本章では、本研究で実装するSelf-host化したSwiftコンパイラについて、~\ref{refinement:comperable}節における考察を元にその可読性の向上を評価するために必要な設計要件を整理し、それを元に行った実装について説明する。
 
-なお、本研究で実装したSwiftコンパイラは~\ref{refinement:comperable}節で述べた理由から構文解析器のみについて可読性の向上評価が可能となっているが、実際には構文解析器以外の機能も実装されており「TreeSwift」というコードネームが付与されている~\cite{treeswift}。本論文でも現行のApple社によるSwiftコンパイラと簡単に区別するため、本研究で実装したSwiftコンパイラを指してTreeSwiftと記述する。
+なお、本研究で実装したSwiftコンパイラには「TreeSwift」というコードネームが付与されている~\cite{treeswift}。本論文でも現行のApple社によるSwiftコンパイラと簡単に区別するため、本研究で実装したSwiftコンパイラを指してTreeSwiftと記述する。
 
 \section{TreeSwiftの設計}
 
