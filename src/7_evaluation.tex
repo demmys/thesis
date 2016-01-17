@@ -1,24 +1,126 @@
 \chapter{評価}
 \label{evaluation}
 
-\section{ソースコード可読性の向上評価}
+本章では、~\ref{implementation}章で述べたTreeSwiftを用いて、現行のSwiftコンパイラとその構文解析器の複雑性に関する比較評価を行う。
+
+また同時に、~\ref{side-effect:swift:demerit}節で懸念点として上がっていたSelf-host化に伴う性能の低下という副作用についても、実際にその可能性が存在するかどうかを両コンパイラの構文解析器の性能を比較することで評価・考察する。
+
+\section{構文解析器の複雑性評価}
+\label{evaluation:complexity}
+
+本節では2つのSwiftコンパイラの構文解析器について、~\ref{readability:evaluation}節で述べた手法から使用する手法を決定し、実際にその手法を用いて複雑性を計測・比較し、結果について考察する。
 
 \subsection{評価手法}
+\label{evaluation:complexity:method}
 
-* LOCをベースとする
-* エラー処理の違いが大きく出る可能性がある
-    * 実行可能な行からさらに実行した行のみを取り出して比較する
-    * 実行可能な行の内どれだけを対象にできているかを算出する
-    * 分岐を決定する文を除いた場合の行数も算出する
-* モジュール定義ファイルのパースには大きな差がでる可能性がある
-    * モジュールのパースやコンパイラオプションの処理などは対象に含めない
+~\ref{implementation:parser}節で述べたように、TreeSwiftの構文解析器には現行のSwiftコンパイラと異なる部分がある。
+そこで、本研究ではできるだけ同じ機能部分についてのみの比較を行うために、両コンパイラの構文解析器のソースコードのうちでも、特定のSwiftプログラムをコンパイルした際に実行された箇所だけを抜き出し、その部分について複雑性の計測と比較を行う。
+
+\vspace{2em}
+{\sl\small{TODO: 図で説明する}}
+\vspace{2em}
+
+この制限により、比較されるソースコードは共に全く同じ構文を対象としたものだけに限定され、さらに用いるSwiftプログラムを構文的な誤りを含まないものにすることで、エラー回復などの両構文解析器間で手法が異なっている部分を評価対象から外すことができる。
+また、同様に扱うファイル形式が異なることが複雑性の差に影響する恐れのあるモジュール解析についても、評価の対象に含まない。
+モジュール解析部分はソースコード内で本体プログラムの解析とは独立した関数から行われるため、その分離は容易である。
+
+次に、ソフトウェアの複雑性を評価する手法として~\ref{readability:evaluation}節ではLOC、FP、HCM、CCMという4つの手法について紹介したが、これらの信憑性について大きな差はないため、本節では特に計測しやすいLOCをベースとした評価のみによって複雑性の比較を行う。
+LOCには、その各行が表している内容によって行を分割することにより、計測の結果をさらに深く考察できるというメリットも有る。
+
+これらを踏まえ、本研究では具体的に表~\ref{table:complexity-measure}の手順に従って構文解析器の複雑性の計測を行う。
+また、この手順によって得られる値とその値に期待される意味は表~\ref{table:complexity-value}のとおりである。
+
+\begin{table}[!hbtp]
+    \begin{center}
+        \caption{複雑性の計測手順}
+        \begin{tabular}{|p{0.05\linewidth}|p{0.9\linewidth}|}
+            \hline
+            順番 & 手順 \\
+            \hline
+            \hline
+            1 & 計測対象のコンパイラをデバッグ情報付きでコンパイルする \\
+            \hline
+            2 & コンパイラをデバッガで読み込み、ソースコード中のすべての行にブレークポイントを追加する \\
+            \hline
+            3 & ブレークポイントは対応する機械語の存在する行でのみ設定されるため、その数を数える \\
+            \hline
+            4 & コンパイラを構文解析のみ実行するオプション付きで用意したSwiftプログラムに対して実行し、1度でもヒットしたブレークポイントに印をつける \\
+            \hline
+            5 & 印のついたブレークポイントの数を数える \\
+            \hline
+        \end{tabular}
+        \label{table:complexity-measure}
+    \end{center}
+\end{table}
+
+\begin{table}[!hbtp]
+    \begin{center}
+        \caption{計測によって得られる値}
+        \begin{tabular}{|p{0.475\linewidth}|p{0.475\linewidth}|}
+            \hline
+            値 & 値に期待される意味 \\
+            \hline
+            \hline
+            ブレークポイントが設定された行数 & ソースコード中の実行可能な行数 \\
+            \hline
+            印のついたブレークポイントの数 & 用意したSwiftプログラムのコンパイルに使用された実行可能な行数 \\
+            \hline
+        \end{tabular}
+        \label{table:complexity-value}
+    \end{center}
+\end{table}
 
 \subsection{計測}
+\label{evaluation:complexity:measurement}
+
+計測に使用したプログラムの全文は付録~\ref{appendix:whole-program}に付した。
+プログラムではSwiftの用意する構造体、列挙体、クラス、プロトコル、変数、関数、ループ、分岐、エラー処理などの構文を満遍なく利用している。
+
+計測時に使用した各コンパイラの情報を表~\ref{table:compiler-environment}、計測の結果を表~\ref{table:complexity-result}に示す。
+なお、ここでは~\ref{table:complexity-value}で示した値に加え、後の考察のために行をその特徴によって分けた場合の値も記述している。
+
+\begin{table}[!hbtp]
+    \begin{center}
+        \caption{計測に使用したコンパイラの情報}
+        \begin{tabular}{|p{0.2\linewidth}|M{0.375\linewidth}|M{0.375\linewidth}|}
+            \hline
+            情報 & TreeSwift & 現行のSwiftコンパイラ \\
+            \hline
+            \hline
+            バージョン & - & swift-2.2-SNAPSHOT-2015-12-31-a \\
+            \hline
+            実行ファイルの生成に用いたコンパイラ & Apple Swift version 2.1.1 & clang version 3.8.0 \\
+            \hline
+            行数のカウントに使用したデバッガ & \multicolumn{2}{|c|}{lldb-340.4.119} \\
+            \hline
+        \end{tabular}
+        \label{table:compiler-environment}
+    \end{center}
+\end{table}
+
+\begin{table}[!hbtp]
+    \begin{center}
+        \caption{計測の結果}
+        \begin{tabular}{|p{0.2\linewidth}|M{0.375\linewidth}|M{0.375\linewidth}|}
+            \hline
+            計測項目 & TreeSwift & 現行のSwiftコンパイラ \\
+            \hline
+            \hline
+            ソースコード中の実行可能な行数 & & \\
+            \hline
+            Swiftプログラムのコンパイルに使用された実行可能な行数 & & \\
+            \hline
+        \end{tabular}
+        \label{table:complexity-result}
+    \end{center}
+\end{table}
 
 \subsection{考察}
 
 
-\section{Self-host化に伴う副作用の評価}
+\section{構文解析器の性能評価}
+
+本節では2つのSwiftコンパイラの構文解析器について、その性能を計測する手法について整理した上で実際にその手法を用いて性能を計測・比較し、結果について考察する。
 
 \subsection{評価手法}
 

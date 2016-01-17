@@ -76,11 +76,11 @@ pdfkeywords={1.Compiler, 2.Self-hosting, 3.Readability of Program, 4.Swift Progr
 \renewcommand{\floatpagefraction}{.99}
 \renewcommand{\bibname}{参考文献}
 
-\pagestyle{fancy}  
+\pagestyle{fancy}
 %\rhead{\thepage}
-%\rhead[]{\leftmark} 
-\lhead[]{} 
-%\lhead[\rightmark]{} 
+%\rhead[]{\leftmark}
+\lhead[]{}
+%\lhead[\rightmark]{}
 
 \makeatletter
 \def\chaptermark#1{\markboth {\ifnum \c@secnumdepth>\m@ne
@@ -117,6 +117,7 @@ pdfkeywords={1.Compiler, 2.Self-hosting, 3.Readability of Program, 4.Swift Progr
 \input{src/7_evaluation}
 \input{src/8_conclusion}
 \input{src/acknowledgement}
+\input{src/appendix}
 
 \renewcommand{\thechapter}{\Alph{chapter}}
 \setcounter{chapter}{0}
