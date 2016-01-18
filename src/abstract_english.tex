@@ -9,10 +9,19 @@ Improve the Readability of Swift Compiler by Self-hosting
 \end{Large}
 \end{center}
 
-When the software project changes into an open source, as the increasing of number of joining developper and their commits for extension or modification, the readability of software's source code takes essential role in the difficulty of implementation and reviewing process.
+When the software project changes into an open source, as both the number of joining developpers \& the extension/modification of program increase, the readability of software's source code becoms important factor for succeeding the project.
 
-In December 2015 the Swift programming language project, which is leaded by Apple, made its souce code public and started to face with such changes.
-The readability of Swift compiler is
+In December 2015, the Swift programming language project, which is leaded by Apple, made its souce code public and started to face with such a change.
+In current process, the readability of Swift compiler is maintained just by the effort to habitually follow the coding style of existing codes and its strict review.
+Therefore, when the new codes grows wider in the software, its readability should become out of control.
+
+On the other hand, there is a technique called Self-hosting, which is adopted in many general-purpose high-level programming languages.
+The Self-hosting is a technique writing the compiler in its targeting programming language.
+Although there are multiple reasons to adopt the Self-hosting to the compile, the most attractive advantage is that developers can reduce their effort for understanding the software.
+When the compiler is self-hosted, its developpers are not reqired to learn the other than the targetting language.
+And furthermore, as the targetting language is newer than its compiler's description language in the early years, the Self-hosting has an effect to change the compiler's source code more readable with the new and expressive grammars of targetting language.
+
+In this research, we implemented the new Swift compiler which is written by Swift and compare its parser with the parser of Apple's Swift compiler in order to verify the readability enhancement ability of Self-hosting.
 
 ~ \\
 Keywords : \\
