@@ -161,7 +161,7 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 
 \begin{table}[!hbtp]
     \begin{center}
-        \caption{Swiftにおける各ファイル単位ごとの実行部分LOC}
+        \caption{Swiftにおける各ファイル種別ごとの実行部分LOC}
         \begin{tabular}{|p{0.4\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
             \hline
             対象プログラム & 構文解析本体ファイル & ASTファイル & その他のファイル\\
@@ -188,7 +188,7 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 
 \begin{table}[!hbtp]
     \begin{center}
-        \caption{TreeSwiftにおける各ファイル単位ごとの実行部分LOC}
+        \caption{TreeSwiftにおける各ファイル種別ごとの実行部分LOC}
         \begin{tabular}{|p{0.4\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
             \hline
             対象プログラム & 構文解析本体ファイル & ASTファイル & その他のファイル\\
@@ -258,7 +258,11 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 
 \subsection{考察}
 
-まず、表~\ref{table:loc-result}で
+まず、表~\ref{table:loc-result}の全体における実行部分LOCで両コンパイラに異様に大きな差を与えていた原因は表~\ref{table:loc-swift-per-file}の実行部分LOCを各ファイル種別ごとに分割して算出した結果から、構文解析本体ファイルではなく、その後の処理のための準備を行うためのプログラム群にあると考えられる。
+実際、現行のSwiftコンパイラはその後に控えるSIL生成のためにASTを走査して正当性の確認を行ったり、Swiftプログラムの構文からSIL生成用の付帯情報が構文解析時に生成されるようにしており、それらのTreeSwiftに存在しない機能を提供するためのプログラムが実行部分LOCの大きな差を生んでいると見られる。
+なお、表~\ref{table:loc-treeswift-per-file}においてTreeSwiftでの構文解析本体ファイルおよびASTファイル以外のファイルの実行部分LOCが同じ値となっているのは、TreeSwiftではそうした追加情報の生成やASTの正当性確認を行っておらず、その他のファイルがコンパイラ全体で使用されるファイルIOの仕組みなどを提供する基本ツールだけで構成されており、構文にかかわらず同じように使用されるからである。
+
+
 
 %%% Local Variables:
 %%% mode: japanese-latex
