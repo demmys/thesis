@@ -3,48 +3,55 @@
 
 本章では、~\ref{implementation}章で述べたTreeSwiftを用いて、現行のSwiftコンパイラとその構文解析器の複雑性に関する比較評価を行う。
 
-また同時に、~\ref{side-effect:swift:demerit}節で懸念点として上がっていたSelf-host化に伴う性能の低下という副作用についても、実際にその可能性が存在するかどうかを両コンパイラの構文解析器の性能を比較することで評価・考察する。
+\section{評価手法}
+\label{evaluation:method}
 
-\section{構文解析器の複雑性評価}
-\label{evaluation:complexity}
+~\ref{implementation:part}節で述べたように、本評価では各コンパイラの複雑性を比較した上で比較結果の原因となった箇所を特定することを目的とする。
+そのために、コンパイラの構文解析器のみに着目し、特定のプログラムをコンパイルするために必要な箇所のみ抜き出してその複雑性を評価する。
 
-本節では2つのSwiftコンパイラの構文解析器について、~\ref{readability:evaluation}節で述べた手法から使用する手法を決定し、実際にその手法を用いて複雑性を計測・比較し、結果について考察する。
+表~\ref{table:evaluation-property}に、~\ref{readability:evaluation}節の各手法について、構文解析器のみを対象とし(条件A)、さらにその中の特定の実行パスだけを抜き出したものを対象とする(条件B)という2つの条件下でも考察するに値する結果が得られる見込があるかをまとめた。
+LOCはその計測の容易さから部分的なプログラムでも正確に計測を行い、考察に繋げることができると考えられるが、他の手法はソフトウェア全体の複雑性を包括的に捉えることを目的としているため、本評価で用いるには適切とはいえない。
 
-\subsection{評価手法}
-\label{evaluation:complexity:method}
-
-~\ref{implementation:parser}節で述べたように、TreeSwiftの構文解析器には現行のSwiftコンパイラと異なる部分がある。
-そこで、本研究ではできるだけ同じ機能部分についてのみの比較を行うために、両コンパイラの構文解析器のソースコードのうちでも、特定のSwiftプログラムをコンパイルした際に実行された箇所だけを抜き出し、その部分について複雑性の計測と比較を行う。
-
-\vspace{2em}
-{\sl\small{TODO: 図で説明する}}
-\vspace{2em}
-
-この制限により、比較されるソースコードは共に全く同じ構文を対象としたものだけに限定され、さらに用いるSwiftプログラムを構文的な誤りを含まないものにすることで、エラー回復などの両構文解析器間で手法が異なっている部分を評価対象から外すことができる。
-また、同様に扱うファイル形式が異なることが複雑性の差に影響する恐れのあるモジュール解析についても、評価の対象に含まない。
-モジュール解析部分はソースコード内で本体プログラムの解析とは独立した関数から行われるため、その分離は容易である。
-
-次に、ソフトウェアの複雑性を評価する手法として~\ref{readability:evaluation}節ではLOC、FP、HCM、CCMという4つの手法について紹介したが、これらの信憑性について大きな差はないため、本節では特に計測しやすいLOCをベースとした評価のみによって複雑性の比較を行う。
-LOCには、その各行が表している内容によって行を分割することにより、計測の結果をさらに深く考察できるというメリットも有る。
-
-これらを踏まえ、本研究では具体的に表~\ref{table:complexity-measure}の手順に従って構文解析器の複雑性の計測を行う。
-また、この手順によって得られる値とその値に期待される意味は表~\ref{table:complexity-value}のとおりである。
+そのため、本研究ではLOCに基づいて、表~\ref{table:complexity-measure}に示す手順で計測を行う。
+この手順によって、図~\ref{img:loc-measurement}のように特定のプログラムを実行した場合のコードだけを対象として計測を行うことができる。
+この手順で計測された値は通常のLOCとは異なるため、これ以降区別するために実行部分LOCと呼ぶ。
 
 \begin{table}[!hbtp]
     \begin{center}
-        \caption{複雑性の計測手順}
+        \caption{各複雑性計測手法の評価目的との合致性}
+        \begin{tabular}{|p{0.1\linewidth}|p{0.1\linewidth}|p{0.1\linewidth}|p{0.65\linewidth}|}
+            \hline
+            評価手法 & (条件A) & (条件B) & 理由\\
+            \hline
+            \hline
+            LOC & ○ & ○ & 行数は対象に関わらず計測が可能であり、同じように加工された2つのプログラムに対してであればそれらを比較することもできる。\\
+            \hline
+            FP & × & × & 比較する2つのコンパイラはデータの入出力に関して全く同じ動作をするため、比較にならない。\\
+            \hline
+            HCM & ○ & △ & プログラムの一部分だけを対象とした場合にHCMの値がどのような意味を示すかを慎重に考える必要がある。\\
+            \hline
+            CCM & ○ & × & プログラムの一部分だけを取り出すと、分岐の片方だけが実行されたプログラムでは分岐があるにも関わらず異なる実行パスが存在しないので、CCMの値の意味が変化してしまう。\\
+            \hline
+        \end{tabular}
+        \label{table:evaluation-property}
+    \end{center}
+\end{table}
+
+\begin{table}[!hbtp]
+    \begin{center}
+        \caption{実行時LOCの計測手順}
         \begin{tabular}{|p{0.05\linewidth}|p{0.9\linewidth}|}
             \hline
             順番 & 手順 \\
             \hline
             \hline
-            1 & 計測対象のコンパイラをデバッグ情報付きでコンパイルする \\
+            1 & 計測対象のコンパイラを構文解析のみを実行するように変更し、デバッグ情報付きでコンパイルする \\
             \hline
             2 & コンパイラをデバッガで読み込み、ソースコード中のすべての行にブレークポイントを追加する \\
             \hline
             3 & ブレークポイントは対応する機械語の存在する行でのみ設定されるため、その数を数える \\
             \hline
-            4 & コンパイラを構文解析のみ実行するオプション付きで用意したSwiftプログラムに対して実行し、1度でもヒットしたブレークポイントに印をつける \\
+            4 & 1で用意したコンパイラを評価用のSwiftプログラムに対して実行し、1度でもヒットしたブレークポイントに印をつける \\
             \hline
             5 & 印のついたブレークポイントの数を数える \\
             \hline
@@ -53,67 +60,117 @@ LOCには、その各行が表している内容によって行を分割する�
     \end{center}
 \end{table}
 
-\begin{table}[!hbtp]
+\begin{figure}
     \begin{center}
-        \caption{計測によって得られる値}
-        \begin{tabular}{|p{0.475\linewidth}|p{0.475\linewidth}|}
-            \hline
-            値 & 値に期待される意味 \\
-            \hline
-            \hline
-            ブレークポイントが設定された行数 & ソースコード中の実行可能な行数 \\
-            \hline
-            印のついたブレークポイントの数 & 用意したSwiftプログラムのコンパイルに使用された実行可能な行数 \\
-            \hline
-        \end{tabular}
-        \label{table:complexity-value}
+        \includegraphics[scale=0.8]{./img/loc_measurement.png}
+        \caption{実行部分LOCの計測手順}
+        \label{img:loc-measurement}
     \end{center}
-\end{table}
+\end{figure}
 
-\subsection{計測}
-\label{evaluation:complexity:measurement}
-
-計測に使用したプログラムの全文は付録~\ref{appendix:whole-program}に付した。
-プログラムではSwiftの用意する構造体、列挙体、クラス、プロトコル、変数、関数、ループ、分岐、エラー処理などの構文を満遍なく利用している。
-
-計測時に使用した各コンパイラの情報を表~\ref{table:compiler-environment}、計測の結果を表~\ref{table:complexity-result}に示す。
-なお、ここでは~\ref{table:complexity-value}で示した値に加え、後の考察のために行をその特徴によって分けた場合の値も記述している。
+現行のSwiftコンパイラについては、もともと用意されている構文解析のみを実行するオプションをつけるだけでなく、通常そのオプションと共に有効化されるASTの表示機能をコメントアウトすることで、構文解析のみが確実に実行されるように調整している。
+また、コンパイラを読み込むデバッガは両コンパイラ共にLLDBのバージョン340.4.119を使用している。
+具体的に評価で使用しているSwiftコンパイラおよびその実行時オプションの詳細は表~\ref{table:swift-executable}にまとめている。
+なお、~\ref{implementation:abstract:parser}節で述べたようにTreeSwiftと現行のSwiftコンパイラではモジュールファイルの形式が異なっており、その点が結果に影響する可能性があるため、計測時にはコンパイラへ標準ライブラリのパスを与えず、モジュールファイルの解析に関する部分が計測対象に含まれないようにしている。
 
 \begin{table}[!hbtp]
     \begin{center}
-        \caption{計測に使用したコンパイラの情報}
-        \begin{tabular}{|p{0.2\linewidth}|M{0.375\linewidth}|M{0.375\linewidth}|}
+        \caption{評価に使用したSwiftコンパイラの詳細情報}
+        \begin{tabular}{|p{0.3\linewidth}|p{0.65\linewidth}|}
             \hline
-            情報 & TreeSwift & 現行のSwiftコンパイラ \\
+            バージョン & swift-2.2-SNAPSHOT-2015-12-31-a からASTの表示をコメントアウトしたもの\\
             \hline
-            \hline
-            バージョン & - & swift-2.2-SNAPSHOT-2015-12-31-a \\
-            \hline
-            実行ファイルの生成に用いたコンパイラ & Apple Swift version 2.1.1 & clang version 3.8.0 \\
-            \hline
-            行数のカウントに使用したデバッガ & \multicolumn{2}{|c|}{lldb-340.4.119} \\
+            実行時に使用するオプション & -frontend -dump-parse\\
             \hline
         \end{tabular}
-        \label{table:compiler-environment}
+        \label{table:complexity-measure}
     \end{center}
 \end{table}
 
+計測時にコンパイラに読ませるSwiftプログラムにはApple社が提供するプログラミング言語Swiftのチュートリアル~\cite{swift-tour}で用いられている7つのサンプルプログラムを使用する。
+ただし、これらのサンプルプログラム中に含まれていた文字リテラル中への式の埋め込みとクロージャを引数に取る関数呼び出しでの括弧の省略のみについてはTreeSwiftが対応していないため、同じ意味を持つ明示的な文字列への変換および文字の結合と括弧付きの呼び出しに変更している。
+各プログラムの概要を表~\ref{table:measure-sample-programs}にまとめた。
+これらのプログラムはチュートリアルという特性上Swiftの代表的な機能を充分網羅している上、プログラムで使用される変数や型に使用する名前や値、処理の構造には実際のソフトウェアを想定したような現実的なものが選ばれているため、コンパイラの機能を満遍なく使いつつも特に実際のソフトウェアでもよく用いられるであろう箇所にフォーカスした計測ができると期待できる。
+
 \begin{table}[!hbtp]
     \begin{center}
-        \caption{計測の結果}
-        \begin{tabular}{|p{0.2\linewidth}|M{0.375\linewidth}|M{0.375\linewidth}|}
+        \caption{計測に使用するSwiftプログラム}
+        \begin{tabular}{|p{0.4\linewidth}|p{0.55\linewidth}|}
             \hline
-            計測項目 & TreeSwift & 現行のSwiftコンパイラ \\
+            ファイル名 & プログラムの概要\\
             \hline
             \hline
-            ソースコード中の実行可能な行数 & & \\
+            simple\_values.swift & 変数の定義と使用、文字・数値・配列・辞書リテラルの使用について説明されている。\\
             \hline
-            Swiftプログラムのコンパイルに使用された実行可能な行数 & & \\
+            control\_flow.swift & 分岐や繰り返しについて、Swiftに特徴的なオプショナル値やパターンマッチと組み合わせた例を中心に説明されている。\\
+            \hline
+            functions\_and\_closures.swift & 関数の定義と使用について、基本的なものから可変長引数やクロージャを用いた高階関数の呼び出しなどの応用的なものまでが説明されている。\\
+            \hline
+            objects\_and\_classes.swift & クラスとそのインスタンス化、継承、関数のオーバーライドなどのSwiftにおけるオブジェクト指向プログラミングについて説明されている。\\
+            \hline
+            enumerations\_and\_structures.swift & 構造体とSwiftに特徴的な関数や関連型などを持つ事のできる列挙体についてその宣言方法と使い方が説明されている。\\
+            \hline
+            protocols\_and\_extensions.swift & 存在型や型拡張によるクラスや構造体の分類および拡張について説明されている。\\
+            \hline
+            generics.swift & 型パラメータ多相を用いた関数や列挙体の宣言方法とその使用方法について説明されている。\\
             \hline
         \end{tabular}
-        \label{table:complexity-result}
+        \label{table:complexity-measure}
     \end{center}
 \end{table}
+
+\section{計測}
+
+まず、表~\ref{table:complexity-measure}の各プログラムをコンパイルした場合それぞれについて~\ref{evaluation:method}節で説明した方法を用いて実行部分LOCを計測した。
+表~\ref{table:loc-result}がその結果および現行のSwiftコンパイラの結果(表中Swift)をTreeSwiftの結果(表中TreeSwift)で割った値の一覧である。
+単純に計測結果だけを見ると、プログラムのコンパイルに要した行数は現行のSwiftコンパイラの方が2~3倍近く多い。
+ただし、TreeSwiftではSwiftコンパイラとして必要な構文解析以外の処理が全て実装されているわけではないため、SwiftコンパイラにおいてはASTの検査など後の処理のための準備が行われており、実行部分LOCが大きく算出されている可能性がある。
+
+そのため、次に各コンパイラの結果をソースコードのファイルごとに分けた上で、構文解析の本体を構成するファイルとASTを構成するファイルを選び、それらについて実行部分LOCの合計を算出した。
+図~\ref{img:parse-loc-result}が構文解析の本体を構成するファイルについて、図~\ref{img:ast-loc-result}はASTを構成するファイルについてそれぞれLOCを比較したグラフである。
+
+\begin{table}[!hbtp]
+    \begin{center}
+        \caption{各プログラムをコンパイルした各コンパイラの実行部分LOC}
+        \begin{tabular}{|p{0.35\linewidth}|p{0.2\linewidth}|p{0.2\linewidth}|p{0.2\linewidth}|}
+            \hline
+            対象プログラム & Swift & TreeSwift & Swift / TreeSwift (小数第四位を四捨五入済)\\
+            \hline
+            \hline
+            simple\_values.swift & 4188 & 1928 & 2.172\\
+            \hline
+            control\_flow.swift & 5347 & 2226 & 2.402\\
+            \hline
+            functions\_and\_closures.swift & 5819 & 2187 & 2.661\\
+            \hline
+            objects\_and\_classes.swift & 5937 & 2122 & 2.798\\
+            \hline
+            enumerations\_and\_structures.swift & 5762 & 2258 & 2.552\\
+            \hline
+            protocols\_and\_extensions.swift & 5598 & 2132 & 2.626\\
+            \hline
+            generics.swift & 5887 & 2233 & 2.636\\
+            \hline
+        \end{tabular}
+        \label{table:loc-result}
+    \end{center}
+\end{table}
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[scale=0.8]{./img/parse_loc_result.png}
+        \caption{構文解析の本体を構成するファイルでの実行部分LOC}
+        \label{img:parse-loc-result}
+    \end{center}
+\end{figure}
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[scale=0.8]{./img/ast_loc_result.png}
+        \caption{ASTを構成するファイルでの実行部分LOC}
+        \label{img:ast-loc-result}
+    \end{center}
+\end{figure}
 
 \subsection{考察}
 
