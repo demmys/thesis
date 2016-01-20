@@ -123,18 +123,21 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 
 まず、表~\ref{table:complexity-measure}の各プログラムをコンパイルした場合それぞれについて~\ref{evaluation:method}節で説明した方法を用いて実行部分LOCを計測した。
 表~\ref{table:loc-result}がその結果および現行のSwiftコンパイラの結果(表中Swift)をTreeSwiftの結果(表中TreeSwift)で割った値の一覧である。
-単純に計測結果だけを見ると、プログラムのコンパイルに要した行数は現行のSwiftコンパイラの方が2~3倍近く多い。
+単純に計測結果だけを見ると、プログラムのコンパイルに要した行数は現行のSwiftコンパイラの方が2\~3倍近く多い。
 ただし、TreeSwiftではSwiftコンパイラとして必要な構文解析以外の処理が全て実装されているわけではないため、SwiftコンパイラにおいてはASTの検査など後の処理のための準備が行われており、実行部分LOCが大きく算出されている可能性がある。
 
-そのため、次に各コンパイラの結果をソースコードのファイルごとに分けた上で、構文解析の本体を構成するファイルとASTを構成するファイルを選び、それらについて実行部分LOCの合計を算出した。
-図~\ref{img:parse-loc-result}が構文解析の本体を構成するファイルについて、図~\ref{img:ast-loc-result}はASTを構成するファイルについてそれぞれLOCを比較したグラフである。
+そのため、次に各コンパイラの結果をソースコードのファイルごとに分けた上で、構文解析の本体を構成するファイル(構文解析本体ファイル)とASTを構成するファイル(ASTファイル)を選び、それらについて実行部分LOCの合計を算出した。
+なお、構文解析本体ファイルとASTを構成するファイル以外のファイルはコンパイラ内の各所から共通で使用されるユーティリティやASTから間接的に使用される構文解析後の処理ステップ用のデータ構造などから構成されている。
+
+表~\ref{table:loc-swift-per-file}および表~\ref{table:loc-treeswift-per-file}は各コンパイラごとに表~\ref{table:loc-result}の数値を構文解析本体ファイル、ASTファイル、その他のファイル毎に分割した算出結果であり、図~\ref{img:parse-loc-result}は構文解析本体ファイル、図~\ref{img:ast-loc-result}はASTファイルの実行部分LOCを現行のSwiftコンパイラとTreeSwiftで比較したグラフである。
+また、構文解析本体ファイルについては各コンパイラの実行部分LOCの差と比を表~\ref{table:parse-loc-arith}にまとめた。
 
 \begin{table}[!hbtp]
     \begin{center}
         \caption{各プログラムをコンパイルした各コンパイラの実行部分LOC}
-        \begin{tabular}{|p{0.35\linewidth}|p{0.2\linewidth}|p{0.2\linewidth}|p{0.2\linewidth}|}
+        \begin{tabular}{|p{0.4\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
             \hline
-            対象プログラム & Swift & TreeSwift & Swift / TreeSwift (小数第四位を四捨五入済)\\
+            対象プログラム & Swift & TreeSwift & 比\\
             \hline
             \hline
             simple\_values.swift & 4188 & 1928 & 2.172\\
@@ -156,10 +159,64 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
     \end{center}
 \end{table}
 
+\begin{table}[!hbtp]
+    \begin{center}
+        \caption{Swiftにおける各ファイル単位ごとの実行部分LOC}
+        \begin{tabular}{|p{0.4\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
+            \hline
+            対象プログラム & 構文解析本体ファイル & ASTファイル & その他のファイル\\
+            \hline
+            \hline
+            simple\_values.swift & 1148 & 1263 & 1777\\
+            \hline
+            control\_flow.swift & 1569 & 1816 & 1962\\
+            \hline
+            functions\_and\_closures.swift & 1783 & 1982 & 2054\\
+            \hline
+            objects\_and\_classes.swift & 1934 & 1970 & 2033\\
+            \hline
+            enumerations\_and\_structures.swift & 1858 & 1886 & 2018\\
+            \hline
+            protocols\_and\_extensions.swift & 1781 & 1851 & 1966\\
+            \hline
+            generics.swift & 1897 & 1934 & 2056\\
+            \hline
+        \end{tabular}
+        \label{table:loc-swift-per-file}
+    \end{center}
+\end{table}
+
+\begin{table}[!hbtp]
+    \begin{center}
+        \caption{TreeSwiftにおける各ファイル単位ごとの実行部分LOC}
+        \begin{tabular}{|p{0.4\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
+            \hline
+            対象プログラム & 構文解析本体ファイル & ASTファイル & その他のファイル\\
+            \hline
+            \hline
+            simple\_values.swift & 376 & 1457 & 95\\
+            \hline
+            control\_flow.swift & 433 & 1698 & 95\\
+            \hline
+            functions\_and\_closures.swift & 448 & 1644 & 95\\
+            \hline
+            objects\_and\_classes.swift & 437 & 1590 & 95\\
+            \hline
+            enumerations\_and\_structures.swift & 505 & 1658 & 95\\
+            \hline
+            protocols\_and\_extensions.swift & 493 & 1544 & 95\\
+            \hline
+            generics.swift & 481 & 1657 & 95\\
+            \hline
+        \end{tabular}
+        \label{table:loc-treeswift-per-file}
+    \end{center}
+\end{table}
+
 \begin{figure}
     \begin{center}
         \includegraphics[scale=0.8]{./img/parse_loc_result.png}
-        \caption{構文解析の本体を構成するファイルでの実行部分LOC}
+        \caption{構文解析本体ファイルに対象を絞った実行部分LOC}
         \label{img:parse-loc-result}
     \end{center}
 \end{figure}
@@ -167,25 +224,41 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 \begin{figure}
     \begin{center}
         \includegraphics[scale=0.8]{./img/ast_loc_result.png}
-        \caption{ASTを構成するファイルでの実行部分LOC}
+        \caption{ASTファイルに対象を絞った実行部分LOC}
         \label{img:ast-loc-result}
     \end{center}
 \end{figure}
 
+\begin{table}[!hbtp]
+    \begin{center}
+        \caption{構文解析本体ファイルに対象を絞った実行部分LOCの差と比}
+        \begin{tabular}{|p{0.45\linewidth}|p{0.225\linewidth}|p{0.225\linewidth}|}
+            \hline
+            対象プログラム & 差 & 比\\
+            \hline
+            \hline
+            simple\_values.swift & -194 & 0.867\\
+            \hline
+            control\_flow.swift & 118 & 1.069\\
+            \hline
+            functions\_and\_closures.swift & 338 & 1.206\\
+            \hline
+            objects\_and\_classes.swift & 380 & 1.239\\
+            \hline
+            enumerations\_and\_structures.swift & 228 & 1.138\\
+            \hline
+            protocols\_and\_extensions.swift & 307 & 1.199\\
+            \hline
+            generics.swift & 277 & 1.167\\
+            \hline
+        \end{tabular}
+        \label{table:parse-loc-arith}
+    \end{center}
+\end{table}
+
 \subsection{考察}
 
-
-\section{構文解析器の性能評価}
-
-本節では2つのSwiftコンパイラの構文解析器について、その性能を計測する手法について整理した上で実際にその手法を用いて性能を計測・比較し、結果について考察する。
-
-\subsection{評価手法}
-
-* 速度とメモリ使用量を計測する
-
-\subsection{計測}
-
-\subsection{考察}
+まず、表~\ref{table:loc-result}で
 
 %%% Local Variables:
 %%% mode: japanese-latex

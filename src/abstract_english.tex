@@ -20,10 +20,12 @@ Therefore, when the new codes grows wider in the software, its readability shoul
 On the other hand, there is a technique called Self-hosting, which is adopted in many general-purpose high-level programming languages.
 The Self-hosting is a technique writing the compiler in its targeting programming language.
 Although there are multiple reasons to adopt the Self-hosting to the compile, the most attractive advantage is that developers can reduce their effort for understanding the software.
-When the compiler is self-hosted, its developpers are not reqired to learn the other than the targetting language.
-And furthermore, as the targetting language is newer than its compiler's description language in the early years, the Self-hosting has an effect to change the compiler's source code more readable with the new and expressive grammars of targetting language.
+When the compiler is self-hosted, its developpers are not reqired to learn the other than the targeting language.
+And furthermore, as the targeting language is newer than its compiler's description language in the early years, the Self-hosting has an effect to change the compiler's source code less complex with the new and expressive grammars of targeting language.
 
 In this research, we implemented the new Swift compiler which is written by Swift and compare its parser with the parser of Apple's Swift compiler in order to verify the readability enhancement ability of Self-hosting.
+As the result of this research, we colud confirm the positive effect of Self-hosting on the readability.
+But at the same time, as the effect depends on some characteristic grammars of Swift, we are considering that some other languages whose compiler is written by other high-level language may not be benefited the effect.
 
 ~ \\
 Keywords : \\
