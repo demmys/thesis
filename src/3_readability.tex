@@ -1,13 +1,13 @@
-\chapter{ソースコード可読性の向上方法と評価手法}
+\chapter{本研究のアプローチ}
 \label{readability}
 
-本章では、本研究が目的とするソフトウェアのソースコード可読性の向上を達成するためのアプローチについて整理し、そのアプローチによって可読性が向上したかどうかを検証するための既存手法についてまとめる。
+本章では、ソフトウェアのソースコード可読性の向上を達成するためのアプローチと、そのアプローチによって可読性が向上したかどうかを検証するための既存手法についてまとめることで、本研究においてSwiftのソースコード可読性を上げるために使用するアプローチについて述べる。
 
-\section{可読性を向上するためのアプローチ}
+\section{ソースコード可読性を向上するためのアプローチ}
 \label{readability:approach}
 
 ~\ref{open-source:readability}節ではソフトウェアのソースコード可読性を向上するために表~\ref{table:readability-relation}に示した要因について適切な改善を行う必要があることと、その内の複雑性については表~\ref{table:complexity-elements}に示した要因に分解できることを説明した。
-本説ではそのために考えられるアプローチについて整理するが、そのより具体的な手法が適用可能かどうかはアプローチを適用するソフトウェアの対象とする問題に依存するため、ここでは手法の例を挙げるに留める。
+本節ではそのために考えられるアプローチについて整理するが、そのアプローチが適用可能かどうかは対象とするソフトウェアの取り組む問題に依存するため、ここでは一般的な手法の例を挙げるに留める。
 
 表~\ref{table:readability-approach}がその考えられるアプローチを列挙したものである。
 なお、表~\ref{table:complexity-elements}でもソフトウェアが対象とする問題の変更などによる複雑性の解消が難しいことについては言及していたが、そもそも本研究で対象としているような拡張・修正が主体となるような開発フェーズではそのソフトウェアの対象とする問題は充分に明確化されている場合がほとんどであるため、問題を変更するようなアプローチについては取り上げていない。
@@ -53,21 +53,22 @@
 
 表~\ref{table:readability-approach}に挙げた中でも下半分の拡張・修正を行う開発者の知識を合致させるようなアプローチでは、場合によっては定量的な数値に落としこむことが難しいため、その具体的な方法に合わせて定性的な手法も含む評価手法を考える必要がある。
 それに対して、ソフトウェアの複雑性については定量的に評価するための手法が多く考案されている。
-本節では、その中でも特によく取り上げられる4種類の手法について整理する ~\cite{yu} ~\cite{symons}。
+本節では、その中でも特によく取り上げられるLOC、FP、HCM、CCMという4種類の手法~\cite{yu} ~\cite{symons}について整理する。
 なお、これら4つの手法は全て、その値が経験則的にソフトウェアの複雑性と結びついているとされているだけであるため、実際に使用する際にはその結果について慎重に考察する必要がある。
 
 \subsubsection{LOC (Line of Code)}
 
-LOCではソフトウェアの実行可能なソースコードの行数とバグの密度などとの間にある相関関係から行数を指標にソフトウェアの複雑性を算出する。
+LOCではソフトウェアの実行可能なソースコードの行数を指標にソフトウェアの複雑性を算出する。
+一般的に充分大きなソフトウェアでは、行数の多いソフトウェアの方が複雑性が高くなるとされているが、小さなソフトウェアについては行数と複雑性の間の明確な相関は認められていないため、注意が必要である。
 
-LOCは最も古典的でありながらもその扱いの容易さからよく用いられているが、特にプログラムの構造がその結果に一切反映されていないという点に注意する必要がある。
+LOCは最も古典的でありながらもその扱いの容易さからよく用いられているが、特にプログラムの構造がその結果に一切反映されていない点についても考慮しなければならない。
 
 \subsubsection{FP (Function Point)}
 
 FPは1979年にAllan J. Albrechtによって提案された。
 ソフトウェアへ入出力されるデータとその入出力操作を列挙して重み付けを行い、その総和を指標にソフトウェアの複雑性を算出する。
 
-FPは特に商用ソフトウェアの工数見積などの目的でよく使用されているが、算出ソフトウェア内のデータ処理による複雑性は経験則的に決定される重み付けのみによって反映される。
+FPは特に商用ソフトウェアの工数見積などの目的でよく使用されているが、算出対象ソフトウェア内のデータ処理による複雑性は経験的に決定される重み付け以外には一切反映されないため、データ処理中心のソフトウェアでは有意義な値にならない点に注意が必要である。
 
 \subsubsection{HCM (Halstead Complexity Metrics)}
 
@@ -90,7 +91,7 @@ CCMでは制御フローに基づく複雑性を算出することができる�
 そのため、その民主的な開発を促すために普段の開発の流れに対して大きく介入するようなアプローチをとってしまうと、オープンソース化によるメリットを潰してしまい、結果として逆効果となってしまう可能性すら考えられる。
 その視点からすると、~\ref{readability:approach}節で例として述べたようなコーディング規約などによって制約を課すようなアプローチではその期待できる効果の薄さの割に逆効果となるリスクまで背負うこととなり、あまり良いアプローチであるとは考えられない。
 
-そこで、本研究では~\ref{introduction:background}節でも他のコンパイラでよく用いられている手法として挙げたSelf-host化を可読性を向上するためのアプローチとして使用する。
+そこで、本研究では~\ref{introduction:background}節でも他のコンパイラでよく用いられている手法として挙げたSelf-host化を可読性を向上するための手法として使用する。
 
 Self-host化は表~\ref{table:complexity-elements}で示したソフトウェアの複雑性に影響する要因の内でも比較して大きな影響を持つ、使用するプログラミング言語の変更であるため、ソフトウェアの複雑性を大きく解消できる可能性がある。
 さらに、Self-host化を行うと、コンパイラの記述言語とコンパイル対象言語が同じものになるため、コンパイラを記述している言語のために特別な知識を要さず、結果としてソフトウェアで使用する手法を減らすことができる。
@@ -101,6 +102,197 @@ Self-host化は表~\ref{table:complexity-elements}で示したソフトウェア
 特にSwiftコンパイラにおいては現行の実装が既に高級言語であるC++によって記述されているため、これをSwiftで書き直すことによって充分な可読性の向上を得られるかどうかをそれら言語の仕様など飲みから判断することは難しい。
 
 そのため、本研究ではSelf-host化したSwiftコンパイラを実装し、~\ref{readability:evaluation}節で述べた手法のどれかを用いることでそのコンパイラの複雑性を現行のコンパイラと比較し、このアプローチの正当性を評価・考察する。
+
+\section{Self-host化の事例}
+\label{side-effect:instance}
+
+本研究のアプローチとして用いるSelf-host化は、そのソースコードを書き直すためにコンパイラに対して可読性の向上以外の様々な影響を与える可能性がある。
+そこで本節では、特に近年多くのユーザに使用されており、先に他の言語による実装が十分な機能を持ってリリースされているにもかかわらずSelf-host化を行った高級汎用言語である、Goのgo、PythonのPyPy、C\#の.NET Compiler Platformの3つの事例から、Self-host化の持ちうる様々な効果について紹介する。
+なお、本節で述べる事例はすべてSelf-host化だけでなくBootstrapまで行っている。
+一般にコンパイラの基幹的な機能についてSelf-host化を行った言語では最終的にBootstrapを目的とすることが多いため、本節では各事例についてBootstrapを行う目的とBootstrapを行った結果に加え、どのようにしてBootstrapを行ったかについてもまとめることで、Swiftが将来的にBootstrapまで行った場合に発生しうる問題についても考察するための情報を提供する。
+
+\subsection{Go - go}
+\label{side-effect:instance:go}
+
+Goは2009年にGoogle社より発表された、構文の簡潔さと効率の高さ、並列処理のサポートを中心的な特徴とする静的型付コンパイラ型言語である。
+発表から6年を経た2015年にリリースされたバージョン1.5でBootstrapが行われ、それまでCで記述されていたコンパイラは完全にGoへと書き換わった。~\cite{go}
+
+\subsubsection{Bootstrapの目的}
+
+GoコンパイラのBootstrapの目的はCとGoの比較という形で~\cite{go-compiler-overhaul}内に以下のように述べられている。
+
+\begin{itemize}
+\item It is easier to write correct Go code than to write correct C code.
+\item It is easier to debug incorrect Go code than to debug incorrect C code.
+\item Work on a Go compiler necessarily requires a good understanding of Go. Implementing the compiler in C adds an unnecessary second requirement.
+\item Go makes parallel execution trivial compared to C.
+\item Go has better standard support than C for modularity, for automated rewriting, for unit testing, and for profiling.
+\item Go is much more fun to use than C.
+\end{itemize}
+
+主にGoを用いたコンパイラの開発がCを用いた場合よりも正確かつ楽になるという点を強調していることから、GoコンパイラのBootstrapの目的は主にコンパイラ開発フローの改善にあったということができるだろう。
+
+\subsubsection{Bootstrapの方法}
+
+Goコンパイラにおいては、~\cite{go-compiler-overhaul}に詳細なBootstrapのプロセスが記述されている。
+これによれば、Bootstrapはおおまかに以下の流れで行われた。
+
+\begin{enumerate}
+\item CからGoへのコードの自動変換器を作成する。
+\item 自動変換機をCで書かれたGoコンパイラに対して使用し、新しいコンパイラとする
+\item 新しいGoで書かれたコンパイラをGoにとって最適な記法へと修正する
+\item プロファイラの解析結果などを用いてGoで書かれたコンパイラを最適化する
+\item コンパイラのフロントエンドをGoで独自に開発されているものへと変更する
+\end{enumerate}
+
+この手法では、特にCからGoへの自動変換器を作成したことで、Cで書かれたコンパイラの開発を止めること無くGoへの変換の準備を行うことができた、という点が優れている。
+ただしこの手法を取れたのは、GoがCに近い機能を多く採用していたこと、CとGoが共に他の高級汎用言語と比べて少ない構文しか持っていなかったことに依るところが大きい。
+
+また、バージョン1.5以降のGoコンパイラにおいてはまずGoのバージョン1.4を用いてコンパイルし、その後にそのコンパイラを再度自分自身でビルドすることによって最新バージョンのコンパイラでコンパイルした最新バージョンのコンパイラを得る~\cite{go-bootstrap-plan}。
+この多少複雑な形によりバージョン1.5以降でもコンパイラをCから独立させることができるが、その代わりにGoのバージョン1.4に依存し続ける点には注意しなくてはならない。
+
+\subsubsection{Bootstrapの結果}
+
+Bootstrapが行われた結果、Goコンパイラのコンパイル速度が低下したことがバージョン1.5のリリースノート~\cite{go-15-release}で言及されている。
+これについて同リリースノートではCからGoへのコード変換がGoの性能を十分に引き出せないコードへの変換を行っているためだとしており、プロファイラの解析結果などを用いた最適化が続けられている。
+
+
+\subsection{Python - PyPy}
+\label{side-effect:instance:python}
+
+Pythonは1991年に発表されたマルチパラダイムの動的型付けインタプリタ型言語である。
+Pythonの最も有名な実装であるCPythonはC言語で書かれているが、そのCPythonと互換性があり、Bootstrapされた全く別のコンパイラが2007年にPyPyという名前でリリースされている。
+このPyPyではCPythonと比べてJITコンパイル機能を備えている点が最も大きな違いとなっている。~\cite{pypy}
+
+\subsubsection{Bootstrapの目的}
+
+PyPyがBootstrapを行った目的はそのドキュメントである~\cite{pypy-doc}内の以下の記述から、特にPythonという言語の持つ柔軟性と、それによる拡張性の高さを利用するためであると読み取れる。
+
+\begin{quotation}
+This Python implementation is written in RPython as a relatively simple interpreter, in some respects easier to understand than CPython, the C reference implementation of Python. We are using its high level and flexibility to quickly experiment with features or implementation techniques in ways that would, in a traditional approach, require pervasive changes to the source code.
+\end{quotation}
+
+
+\subsubsection{Bootstrapの方法}
+
+PyPyのインタプリタは、PyPyと同時に開発されているRPythonというPythonのサブセット言語で実装されており、RPythonはRPythonで書かれたプログラムをCなどのより低レベルな言語に変換する役割を担う~\cite{rpython-doc}。
+
+そのため、RPythonの実行時の性能はPyPy自体の性能に一切関与せず、例えばPythonで記述されているRPythonがPyPyで実行されているかCPythonで実行されているかはPyPyの性能に何ら影響を与えない。
+
+このRPythonという変換器による仲介と、既存実装であるCPythonとの互換性がPyPyのBootstrapを可能にしている。
+
+
+\subsubsection{Bootstrapの結果}
+
+PyPyについては多くのベンチマークにおいて互換性のあるCPythonのバージョンに対してその実行速度が向上していることが示されている~\cite{speed-pypy-org}。
+これはPyPyが単にBootstrapを行っただけでなく、RPythonによってPyPyインタプリタをネイティブコードにコンパイルできるよう仲介した上で、JITコンパイル機能を付加したためである。
+
+このように、Bootstrapを行ったインタプリタを直接そのインタプリタで実行するのではなく、より高速に動作する形へ変換して実行することで、性能の低下を免れられ、それどころか独自の拡張によってそれまでの実装よりもより高い性能を得られる場合がある。
+ただし、この手法を取った場合はPyPyにおけるCのような他の低級言語への依存が残ってしまい、その可搬性に制限が生じてしまう可能性があるという点には注意する必要がある。
+
+
+\subsection{C\# - .NET Compiler Platform}
+\label{side-effect:instance:csharp}
+
+C\#は2000年にMicrosoft社より.NET Frameworkを利用するアプリケーションの開発用に発表された、マルチパラダイムの静的型付けコンパイラ型言語である。
+2014年に同社はC++で記述されていたコンパイラのBootstrapを行い、Visual Basic .NET と合わせてコンパイラ中の各モジュールをAPIによって外部から利用できるようにした.NET Compiler Platformをプレビュー版としてリリースした。
+その後2015年にはVisual Studio 2015における標準のC\#コンパイラとして.NET Compiler Platformを採用するようになっている。~\cite{roslyn}
+
+\subsubsection{Bootstrapの目的}
+
+.NET Compiler Platformはコンパイラの構文解析や参照解決、フロー解析などの各ステップを独立したAPIとして提供している~\cite{roslyn-doc}。
+これにより、例えばVisual StudioなどのIDEはこれらのAPIを使用することで、いちからC\#のパーサを構築すること無くシンタックスハイライトや定義箇所の参照機能を提供できる。
+そうしたライブラリ的機能をスムーズに利用できるようにするためには、.NET Compiler Platform自体がそれを利用するVisual Studioの拡張などと同様の言語で提供されている必要があった。
+
+その結果、.NET Compiler PlatformはC\#コンパイラをC\#、Visual Basic .NETをVisual Basic .NETで記述するBootstrapの形式で開発することとなっている。
+
+\subsubsection{Bootstrapの方法}
+
+.NET Compiler PlatformはVisual Studio 2013以前に使用されていたVisual C\#とは独立して開発され、Visual Studio 2013に採用されていたC\# 5の次期バージョンであるC\# 6の実装となっていた。
+そのため、.NET Compiler Platformの開発においてVisual C\#に対する大きな変更などは行われておらず、全ての新機能を.NET Compiler Platformのみに対して適用するだけで事足りている。
+
+また、.NET Compiler Platformの最新版はVisual Studioの最新版とともにバイナリ形式で配布されることが前提となっており、公開されているソースコードからビルドを行う場合でも配布されているコンパイラを使用する。
+そのため、配布されているVisual Studioが実行可能なプラットフォーム以外で.NET Compiler Platformを使用するためにはそれを実行可能な環境でクロスコンパイルするか.NET Compiler Platform以外のC\#コンパイラを用いてコンパイルする以外に方法がないが、その明確な手立ては示されていない~\cite{roslyn-cross-platform}。
+
+\subsubsection{Bootstrapの結果}
+
+Microsoft社ではBootstrapを行うにあたってその性能に対して非常に注力しており、結果としてBootstrap後も想定していた充分によい性能が発揮できていると~\cite{roslyn-performance}内で述べている。
+
+
+\subsection{Self-host化による可読性の向上以外のメリット}
+\label{side-effect:swift:merit}
+
+まず、表~\ref{table:bootstrap-merit}に~\ref{side-effect:instance}節で述べた事例から~\ref{readability:idea}節で述べた可読性の向上に繋がる点以外のBootstrapにおける以外の利点をまとめ、SwiftがBootstrapを行った場合にそれらの利点が得られる可能性があるか否かをまとめた。
+
+\begin{table}[hb]
+    \begin{center}
+        \caption{Swiftでも享受できる可能性のあるBootstrapの利点}
+        \begin{tabular}{|m{10cm}|c|}
+            \hline
+            利点 & Swiftでの享受 \\
+            \hline
+            並列化やモジュール化、テスト、プロファイリングなどにおいて高いサポートが得られる & × \\
+            \hline
+            コンパイラの各フローをライブラリとして提供できる & × \\
+            \hline
+        \end{tabular}
+        \label{table:bootstrap-merit}
+    \end{center}
+\end{table}
+
+
+~\ref{side-effect:instance:go}節や~\ref{side-effect:instance:python}で見たように、各事例でも記述やデバッグが容易になったりより柔軟になり拡張性が高くなったりしているという評価があることは本研究のアプローチにおいても可読性を向上できると期待できる大きな根拠となる。
+また、~\ref{side-effect:instance:python}節ではSelf-host化を行っても必ずしも必要となるプログラミング言語の知識が減るとは限らないことが分かったが、Swiftはコンパイラ型言語であるため、よほど特殊な方法を採用しない限りはこのメリットを享受できると考えて差し支えない。
+
+一方で、~\ref{side-effect:instance:go}節で上がっていたような並列化やモジュール化、テスト、プロファイリングに対するサポートはSwiftと現行のSwiftコンパイラ記述言語であるC++の間で同等か、Swiftは特にMac OS X以外のプラットフォームにおける各機能のサポートが未だ不十分なため、C++の方に分配が上がる可能性が高い。
+
+~\ref{side-effect:instance:csharp}節で挙げた.NET Compiler Platformのようにコンパイラの各フローをライブラリとして提供することは設計次第で可能だろう。
+しかし、現状のSwiftにはC\#に対するVisual Studioのようなその言語で記述されたIDEや言語のためのツールなどは存在しておらず、そのAPIをSwiftで提供したとしても、特筆すべきほどの利点にはなり得ない可能性が高い。
+
+\subsection{Self-host化によって想定されるデメリット}
+\label{side-effect:swift:demerit}
+
+次に、表~\ref{table:bootstrap-demerit}に~\ref{side-effect:instance}節で述べた事例からBootstrapにおいて発生しうる課題をまとめ、SwiftがBootstrapを行った場合にそれらの課題が問題となるかどうかをまとめた。
+なお、ここではSelf-host化に限らずBootstrapまでを行った場合にのみ発生する課題についても考察しているが、これはコンパイラの基幹機能をSelf-host化したコンパイラでは一般的にBoostrapまで行っており、Swiftでもそうなることが予想されるため、意図的にSelf-host化だけを行った場合の課題にのみ絞り込まないようにしているためである。
+
+\begin{table}[hb]
+    \begin{center}
+        \caption{SwiftのBootstrap時に発生しうる課題}
+        \begin{tabular}{|m{10cm}|M{3cm}|}
+            \hline
+            課題 & SwiftのBootstrap時に問題となるか \\
+            \hline
+            現行のコンパイラの開発に対する影響 & ◯ \\
+            \hline
+            過去のバージョンに対する依存 & ◯ \\
+            \hline
+            コンパイル速度の低下 & ? \\
+            \hline
+            他の低級言語への依存 & × \\
+            \hline
+            他のプラットフォームへの移植の煩雑化 & ◯ \\
+            \hline
+        \end{tabular}
+        \label{table:bootstrap-demerit}
+    \end{center}
+\end{table}
+
+Swiftの言語仕様は日々メーリングリストで改善のための議論が行われており、既に次期バージョンである3.0での破壊的な変更も定まっているように、まだまだ安定していない。
+そのため、~\ref{side-effect:instance:csharp}節で挙げたC\#のように全く別のプロジェクトとしてBootstrapされたSwiftコンパイラを作成する場合には、現行のコンパイラとBootstrapしているコンパイラの両方のメンテナンスコストが非常に高くなってしまう。
+これを防ぐためにはBootstrapのプロセスにおいてコンパイラへの大きな仕様変更などを行わないようにしなくてはならず、現行のコンパイラの開発に対する影響は避けられなくなってしまう。
+なお、~\ref{side-effect:instance:go}節で述べたGoの例のようにC++からSwiftへの変換器を作成する形式は現実的ではない。
+なぜならば、C++とSwiftは互いに言語仕様が複雑かつ多様であり、かつSwiftの言語仕様は先述の通り破壊的に変更されているため、その変換器を作成するためのコストはBootstrapによって得られるメリットよりも格段に大きくなる可能性が高いからである。
+
+過去のバージョンに対する依存は、~\ref{side-effect:instance:go}節で述べたGoのような方法を取れば避けられない課題である。
+かつ、現状のSwiftにおいてはバージョン間で破壊的な変更があるため、それがコンパイラの機能を大きく制限してしまう可能性が高い。
+この問題は~\ref{side-effect:instance:csharp}節で述べた.NET Compiler Platformのようにコンパイラの配布の基本をバイナリ形式とすることで解決できる。
+ただし、その場合は.NET Compiler Platformと同様に他のプラットフォームへの移植の煩雑化という問題とのトレードオフに陥る点には注意しなくてはならない。
+
+他の低級言語への依存は、Swift自体がコンパイラ型言語であるため、起こりづらいと考えられる。
+
+最後に、コンパイル速度の低下は~\ref{side-effect:instance:go}節にあるGoのように変換器を使用しなかったとしても起こりうる可能性があるが、~\ref{side-effect:instance:csharp}節にある.NET Compiler Platformの事例のようにそのパフォーマンス改善に注力することで十分な性能を得られる可能性も等しくある。
+
+本研究では可読性の向上のみを目的としているためにこれらのデメリットに対する評価などは行わないが、実際にSelf-host化を行う際にはこうしたデメリットを考慮し、目的に即した手段を取れているかどうかを充分に確認する必要があるだろう。
 
 %%% Local Variables:
 %%% mode: japanese-latex

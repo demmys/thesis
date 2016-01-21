@@ -7,7 +7,8 @@
 \label{evaluation:method}
 
 ~\ref{implementation:part}節で述べたように、本評価では各コンパイラの複雑性を比較した上で比較結果の原因となった箇所を特定することを目的とする。
-そのために、コンパイラの構文解析器のみに着目し、特定のプログラムをコンパイルするために必要な箇所のみ抜き出してその複雑性を評価する。
+~\ref{implementation:part}節では構文を解析する関数を別々に見ることで構文解析器をさらに分割して評価できる可能性について示唆したが、実際にはTreeSwiftと現行のSwiftコンパイラの両方について特定の構文をコンパイルするために必要な関数だけを独立した状態で抜き出すのは難しい。
+そこで本研究における評価では、コンパイラ中の特定の構文を対象としている箇所を静的に決定するのではなく、その構文を実際にコンパイルした際に事項される箇所を動的に把握することで、特定の構文をコンパイルするために必要な箇所だけを対象とした複雑性の計測を行う。
 
 表~\ref{table:evaluation-property}に、~\ref{readability:evaluation}節の各手法について、構文解析器のみを対象とし(条件A)、さらにその中の特定の実行パスだけを抜き出したものを対象とする(条件B)という2つの条件下でも考察するに値する結果が得られる見込があるかをまとめた。
 LOCはその計測の容易さから部分的なプログラムでも正確に計測を行い、考察に繋げることができると考えられるが、他の手法はソフトウェア全体の複雑性を包括的に捉えることを目的としているため、本評価で用いるには適切とはいえない。
@@ -70,7 +71,7 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 
 現行のSwiftコンパイラについては、もともと用意されている構文解析のみを実行するオプションをつけるだけでなく、通常そのオプションと共に有効化されるASTの表示機能をコメントアウトすることで、構文解析のみが確実に実行されるように調整している。
 また、コンパイラを読み込むデバッガは両コンパイラ共にLLDBのバージョン340.4.119を使用している。
-具体的に評価で使用しているSwiftコンパイラおよびその実行時オプションの詳細は表~\ref{table:swift-executable}にまとめている。
+具体的に評価で使用しているSwiftコンパイラおよびその実行時オプションの詳細は表~\ref{table:swift-exe-option}にまとめている。
 なお、~\ref{implementation:abstract:parser}節で述べたようにTreeSwiftと現行のSwiftコンパイラではモジュールファイルの形式が異なっており、その点が結果に影響する可能性があるため、計測時にはコンパイラへ標準ライブラリのパスを与えず、モジュールファイルの解析に関する部分が計測対象に含まれないようにしている。
 
 \begin{table}[!hbtp]
@@ -83,14 +84,15 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
             実行時に使用するオプション & -frontend -dump-parse\\
             \hline
         \end{tabular}
-        \label{table:complexity-measure}
+        \label{table:swift-exe-option}
     \end{center}
 \end{table}
 
 計測時にコンパイラに読ませるSwiftプログラムにはApple社が提供するプログラミング言語Swiftのチュートリアル~\cite{swift-tour}で用いられている7つのサンプルプログラムを使用する。
-ただし、これらのサンプルプログラム中に含まれていた文字リテラル中への式の埋め込みとクロージャを引数に取る関数呼び出しでの括弧の省略のみについてはTreeSwiftが対応していないため、同じ意味を持つ明示的な文字列への変換および文字の結合と括弧付きの呼び出しに変更している。
+ただし、これらのサンプルプログラム中に含まれていた文字リテラル中への式の埋め込みとクロージャを引数に取る関数呼び出しにおける括弧の省略という2つの構文についてはTreeSwiftが対応していないため、同じ意味を持つ明示的な文字列への変換および文字の結合と括弧付きの呼び出しという異なる構文に変更している。
+
 各プログラムの概要を表~\ref{table:measure-sample-programs}にまとめた。
-これらのプログラムはチュートリアルという特性上Swiftの代表的な機能を充分網羅している上、プログラムで使用される変数や型に使用する名前や値、処理の構造には実際のソフトウェアを想定したような現実的なものが選ばれているため、コンパイラの機能を満遍なく使いつつも特に実際のソフトウェアでもよく用いられるであろう箇所にフォーカスした計測ができると期待できる。
+これらのプログラムはチュートリアルという特性上それぞれ異なるSwiftの基本的な機能を使用している上、プログラムで使用される変数や型に使用する名前や値、処理の構造には実際のソフトウェアを想定した現実的なものが選ばれているため、様々な構文について別々にかつ実際のソフトウェアでよく用いられるであろう箇所にフォーカスした計測ができると期待できる。
 
 \begin{table}[!hbtp]
     \begin{center}
@@ -123,19 +125,19 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 \label{evaluation:measure}
 
 まず、表~\ref{table:complexity-measure}の各プログラムをコンパイルした場合それぞれについて~\ref{evaluation:method}節で説明した方法を用いて実行部分LOCを計測した。
-表~\ref{table:loc-result}がその結果および現行のSwiftコンパイラの結果(表中Swift)をTreeSwiftの結果(表中TreeSwift)で割った値の一覧である。
-単純に計測結果だけを見ると、プログラムのコンパイルに要した行数は現行のSwiftコンパイラの方が2\~3倍近く多い。
-ただし、TreeSwiftではSwiftコンパイラとして必要な構文解析以外の処理が全て実装されているわけではないため、SwiftコンパイラにおいてはASTの検査など後の処理のための準備が行われており、実行部分LOCが大きく算出されている可能性がある。
+表~\ref{table:loc-result}がその結果および現行のSwiftコンパイラの結果(表中Swift)とTreeSwiftの結果(表中TreeSwift)の比の一覧である。
+単純に計測結果だけを見ると、プログラムのコンパイルに要した行数は現行のSwiftコンパイラの方が2$\sim$3倍近く多い。
+ただし、TreeSwiftではSwiftコンパイラとして必要な構文解析以外の処理が全て実装されているわけではないため、SwiftコンパイラにおいてはASTの検査など後の処理のための準備が行われており、実行部分LOCがSelf-host化による差だけでなく、その差によって大きく算出されている可能性がある。
 
-そのため、次に各コンパイラの結果をソースコードのファイルごとに分けた上で、構文解析の本体を構成するファイル(構文解析本体ファイル)とASTを構成するファイル(ASTファイル)を選び、それらについて実行部分LOCの合計を算出した。
-なお、構文解析本体ファイルとASTを構成するファイル以外のファイルはコンパイラ内の各所から共通で使用されるユーティリティやASTから間接的に使用される構文解析後の処理ステップ用のデータ構造などから構成されている。
+そのため、次に各コンパイラの実行部分LOCをその行が書かれているソースコードのファイルごとに分けた上で、構文解析の本体を構成するファイル群(構文解析ファイル群)、ASTを構成するファイル群(ASTファイル群)およびその他のファイル群ごとに集計しなおした。
+なお、その他のファイル群にはコンパイラ内の各所から共通で使用されるユーティリティやASTから間接的に使用される構文解析後の処理ステップ用のデータ構造などが含まれている。
 
-表~\ref{table:loc-swift-per-file}および表~\ref{table:loc-treeswift-per-file}は各コンパイラごとに表~\ref{table:loc-result}の数値を構文解析本体ファイル、ASTファイル、その他のファイル毎に分割した算出結果であり、図~\ref{img:parse-loc-result}は構文解析本体ファイル、図~\ref{img:ast-loc-result}はASTファイルの実行部分LOCを現行のSwiftコンパイラとTreeSwiftで比較したグラフである。
-また、構文解析本体ファイルについては各コンパイラの実行部分LOCの差と比を表~\ref{table:parse-loc-arith}にまとめた。
+表~\ref{table:loc-swift-per-file}および表~\ref{table:loc-treeswift-per-file}は各コンパイラごとにそのファイル群ごとの再集計を行った結果であり、図~\ref{img:parse-loc-result}および図~\ref{img:ast-loc-result}はそれらの値の内、構文解析ファイル群とASTファイル群それぞれの実行部分LOCについて現行のSwiftコンパイラのものとTreeSwiftのものを同じグラフ上にプロットしたものである。
+また、構文解析ファイル群については後の考察のために各コンパイラにおける実行部分LOCの差と比を表~\ref{table:parse-loc-arith}にまとめた。
 
 \begin{table}[!hbtp]
     \begin{center}
-        \caption{各プログラムをコンパイルした各コンパイラの実行部分LOC}
+        \caption{各コンパイラにおける実行部分LOCの計測結果}
         \begin{tabular}{|p{0.4\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
             \hline
             対象プログラム & Swift & TreeSwift & 比\\
@@ -162,10 +164,10 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 
 \begin{table}[!hbtp]
     \begin{center}
-        \caption{Swiftにおける各ファイル種別ごとの実行部分LOC}
+        \caption{現行のSwiftコンパイラについて各ファイル群ごとに実行部分LOCを再集計した結果}
         \begin{tabular}{|p{0.4\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
             \hline
-            対象プログラム & 構文解析本体ファイル & ASTファイル & その他のファイル\\
+            対象プログラム & 構文解析ファイル群 & ASTファイル群 & その他のファイル群\\
             \hline
             \hline
             simple\_values.swift & 1148 & 1263 & 1777\\
@@ -189,10 +191,10 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 
 \begin{table}[!hbtp]
     \begin{center}
-        \caption{TreeSwiftにおける各ファイル種別ごとの実行部分LOC}
+        \caption{TreeSwiftについて各ファイル群ごとに実行部分LOCを再集計した結果}
         \begin{tabular}{|p{0.4\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
             \hline
-            対象プログラム & 構文解析本体ファイル & ASTファイル & その他のファイル\\
+            対象プログラム & 構文解析ファイル群 & ASTファイル群 & その他のファイル群\\
             \hline
             \hline
             simple\_values.swift & 376 & 1457 & 95\\
@@ -217,7 +219,7 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 \begin{figure}
     \begin{center}
         \includegraphics[scale=0.8]{./img/parse_loc_result.png}
-        \caption{構文解析本体ファイルに対象を絞った実行部分LOC}
+        \caption{両コンパイラの構文解析ファイル群の実行部分LOCの比較}
         \label{img:parse-loc-result}
     \end{center}
 \end{figure}
@@ -225,14 +227,14 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 \begin{figure}
     \begin{center}
         \includegraphics[scale=0.8]{./img/ast_loc_result.png}
-        \caption{ASTファイルに対象を絞った実行部分LOC}
+        \caption{両コンパイラのASTファイル群の実行部分LOCの比較}
         \label{img:ast-loc-result}
     \end{center}
 \end{figure}
 
 \begin{table}[!hbtp]
     \begin{center}
-        \caption{構文解析本体ファイルに対象を絞った実行部分LOCの差と比}
+        \caption{各コンパイラの構文解析本体ファイルに対象を絞った実行部分LOCの差と比}
         \begin{tabular}{|p{0.45\linewidth}|p{0.225\linewidth}|p{0.225\linewidth}|}
             \hline
             対象プログラム & 差 & 比\\
@@ -259,13 +261,14 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 
 \subsection{考察}
 
-まず、表~\ref{table:loc-result}の全体における実行部分LOCで両コンパイラに異様に大きな差を与えていた原因は表~\ref{table:loc-swift-per-file}の実行部分LOCを各ファイル種別ごとに分割して算出した結果から、構文解析本体ファイルではなく、その後の処理のための準備を行うためのプログラム群にあると考えられる。
+まず、表~\ref{table:loc-result}の全体における実行部分LOCで両コンパイラに異様に大きな差を与えていた原因は表~\ref{table:loc-swift-per-file}の実行部分LOCを各ファイル群ごとに再集計した結果から、構文解析ファイル群ではなく、それ以外のファイル群に含まれるプログラムにあると考えられる。
 実際、現行のSwiftコンパイラはその後に控えるSIL生成のためにASTを走査して正当性の確認を行ったり、Swiftプログラムの構文からSIL生成用の付帯情報が構文解析時に生成されるようにしており、それらのTreeSwiftに存在しない機能を提供するためのプログラムが実行部分LOCの大きな差を生んでいると見られる。
-なお、表~\ref{table:loc-treeswift-per-file}においてTreeSwiftでの構文解析本体ファイルおよびASTファイル以外のファイルの実行部分LOCが同じ値となっているのは、TreeSwiftではそうした追加情報の生成やASTの正当性確認を行っておらず、その他のファイルがコンパイラ全体で使用されるファイルIOの仕組みなどを提供する基本ツールだけで構成されており、構文にかかわらず同じように使用されるからである。
+なお、表~\ref{table:loc-treeswift-per-file}においてその他のファイル群の実行部分LOCが同じ値となっているのは、TreeSwiftではそうした追加情報の生成やASTの正当性確認を行っておらず、その他のファイルがコンパイラ全体で使用されるファイルI/Oの仕組みなどを提供する基本ツールだけで構成されており、構文にかかわらず同じように使用されているからである。
 
-しかし、図~\ref{img:parse-loc-result}にあるそうした部分を差っ引いた構文解析本体ファイルについてのみの結果を見ても、simple\_values.swift以外の例でTreeSwiftの方が低い実行部分LOCを記録している。
+しかし、図~\ref{img:parse-loc-result}にあるそうした部分を差っ引いた構文解析ファイル群の結果のみについて見ても、simple\_values.swift以外のプログラム全てでTreeSwiftの方が低い実行部分LOCを記録している。
 特にこの差を作り出していると考えられる原因の1つが、両コンパイラにおける分岐構文の使用傾向の差異である。
-表~\ref{table:branching-method-swift}および表~\ref{table:branching-method-treeswift}は各対象プログラムを実行した際の構文解析本体ファイルにおいて実行された行(実行部分LOCの算出元となっている行)の内、現行のSwiftコンパイラではif文とswitch文とassert文、TreeSwiftではif文とswitch文とguard文がそれぞれ何度使用されているかをまとめたものである。
+表~\ref{table:branching-method-swift}および表~\ref{table:branching-method-treeswift}は構文解析ファイル群の実行部分LOCの算出元となっている行の内、分岐構文の使用されている行がどれだけ存在するかを調べたものである。
+なお、分岐構文としては現行のSwiftコンパイラではif文とswitch文とassert文、TreeSwiftではif文とswitch文とguard文をそれぞれ対象としている。
 
 これらの表に見られる通り、現行のSwiftコンパイラにおいてはswitch文に対してif文が多く使用されているのに比べて、TreeSwiftではif文の使用量が減り、代わりにswitch文の使用量が増加している。
 これは、Swiftの持つ強力なパターンマッチや列挙型によって、C++では異なる分岐文で別個に処理されていたものを同一のswitch文で使用できるようになったためだと考えられる。
@@ -274,9 +277,11 @@ Swiftのパターンマッチは条件判定と同時に列挙型やタプルな
 また、simple\_values.swiftのみにおいてTreeSwiftの実行部分LOCが大きくなっていたのは、~\ref{implementation:abstract:parser}節で述べたように、TreeSwiftでは構文解析のステップを簡略化するために字句解析器が比較して複雑なアルゴリズムを採用しているためだと思われる。
 これは、7つの対象プログラムについてSwiftの構文解析本体ファイルのみを対象とした実行部分LOCの標本分散は約53874であるのに対して、TreeSwiftでは約5930と低く、TreeSwiftの方が全てのプログラムで共通して実行されている部分が多くの部分を占めていることからも考察できる。
 
+以上の考察により、TreeSwiftは基本的にSwiftのパターンマッチなどの機能によって現行のSwiftコンパイラよりもその複雑性を低くすることに成功しており、Self-host化によって可読性の向上に成功したといえる。
+
 \begin{table}[!hbtp]
     \begin{center}
-        \caption{Swiftにおける構文解析本体ファイルの実行部分中の分岐構文の行数}
+        \caption{Swiftにおける構文解析ファイル群の実行部分中の分岐構文の行数}
         \begin{tabular}{|p{0.5\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
             \hline
             対象プログラム & if文 & switch文 & assert文\\
@@ -303,7 +308,7 @@ Swiftのパターンマッチは条件判定と同時に列挙型やタプルな
 
 \begin{table}[!hbtp]
     \begin{center}
-        \caption{TreeSwiftにおける構文解析本体ファイルの実行部分中の分岐構文の行数}
+        \caption{TreeSwiftにおける構文解析ファイル群の実行部分中の分岐構文の行数}
         \begin{tabular}{|p{0.5\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
             \hline
             対象プログラム & if文 & switch文 & guard文\\
@@ -324,7 +329,7 @@ Swiftのパターンマッチは条件判定と同時に列挙型やタプルな
             generics.swift & 214 & 70 & 26\\
             \hline
         \end{tabular}
-        \label{table:branching-method-treswift}
+        \label{table:branching-method-treeswift}
     \end{center}
 \end{table}
 
