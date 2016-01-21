@@ -25,64 +25,60 @@
 
 しかし、SwiftのSelf-host化についてSwiftコンパイラのレポジトリ内に記載されているFAQ~\cite{swift-faq}では、Self-host化した際に言語環境を用意するプロセスが煩雑化すること、現時点ではSwiftにコンパイラ開発用の特徴を追加するよりも汎用言語としての特徴追加を優先したいことから、短期的にはSelf-host化を行う予定はないと述べられている。
 
-\vspace{2em}
-{\sl\small{TODO: 表~\ref{table:bootstrapping-languages}の情報に参考文献を付ける}}
-\vspace{2em}
-
 \begin{table}[hb]
     \begin{center}
         \caption{知名度の高いプログラミング言語のBootstrap状況}
         \begin{tabular}{|c|c|c|m{4.5cm}|}
             \hline
-            順位 & 言語名 & Bootstrapされているか & Bootstrapされている主要コンパイラ \\
+            順位 & 言語名 & Bootstrapされているか & Bootstrapされている主要コンパイラ\\
             \hline
-            1 & Java & × & - \\
+            1 & Java & × & -\\
             \hline
-            2 & C & × & - \\
+            2 & C & × & -\\
             \hline
-            3 & C++ & ◯ & clang, gcc, Microsoft Visual C++ \\
+            3 & C++ & ◯ & clang~\cite{clang}, gcc~\cite{gcc}, Microsoft Visual C++~\cite{vcpp}\\
             \hline
-            4 & Python & ◯ & PyPy \\
+            4 & Python & ◯ & PyPy~\cite{pypy-doc}\\
             \hline
-            5 & C\# & ◯ & .NET Compiler Platform \\
+            5 & C\# & ◯ & .NET Compiler Platform~\cite{roslyn-doc}\\
             \hline
             6 & PHP & × & - \\
             \hline
-            7 & Visual Basic .NET & ◯ & .NET Compiler Platform \\
+            7 & Visual Basic .NET & ◯ & .NET Compiler Platform~\cite{roslyn-doc}\\
             \hline
-            8 & JavaScript & × & - \\
+            8 & JavaScript & × & -\\
             \hline
-            9 & Perl & × & - \\
+            9 & Perl & × & -\\
             \hline
-            10 & Ruby & × & - \\
+            10 & Ruby & × & -\\
             \hline
-            11 & Assembly Language & (高級言語でないため除外) & \\
+            11 & Assembly Language & (高級言語でないため除外) &\\
             \hline
-            12 & Visual Basic & × & - \\
+            12 & Visual Basic & × & -\\
             \hline
-            13 & Delphi/Object Pascal & ◯ & Free Pascal \\
+            13 & Delphi/Object Pascal & ◯ & Free Pascal~\cite{free-pascal}\\
             \hline
-            14 & Swift & × & - \\
+            14 & Swift & × & -\\
             \hline
-            15 & Objective-C & × & - \\
+            15 & Objective-C & × & -\\
             \hline
-            16 & MATLAB & (汎用言語でないため除外) & \\
+            16 & MATLAB & (汎用言語でないため除外) &\\
             \hline
-            17 & Pascal & × & - \\
+            17 & Pascal & × & -\\
             \hline
-            18 & R & (汎用言語でないため除外) & \\
+            18 & R & (汎用言語でないため除外) &\\
             \hline
-            19 & PL/SQL & (汎用言語でないため除外) & \\
+            19 & PL/SQL & (汎用言語でないため除外) &\\
             \hline
-            20 & COBOL & × & - \\
+            20 & COBOL & × & -\\
             \hline
-            21 & Ada & ◯ & GNAT \\
+            21 & Ada & ◯ & GNAT~\cite{gnat}\\
             \hline
-            22 & Fortran & × & - \\
+            22 & Fortran & × & -\\
             \hline
-            23 & D & ◯ & DMD \\
+            23 & D & ◯ & DMD~\cite{dmd}\\
             \hline
-            24 & Groovy & × & - \\
+            24 & Groovy & × & -\\
             \hline
         \end{tabular}
         \label{table:bootstrapping-languages}
@@ -102,10 +98,7 @@
 \label{introduction:purpose}
 
 本研究ではSwiftコンパイラの可読性を現在のものよりも向上させることを目的とする。
-そのアプローチとして、我々がSwiftのオープンソース化以前より実装していたSwiftで記述したSwiftコンパイラを用い、そのソースコードの可読性を現行のSwiftコンパイラと比較することで、SwiftコンパイラのSelf-host化が可読性の向上に有効であることを示す。
-
-また、コンパイラのSelf-host化はコンパイラのプログラムを全て書き換えてしまうために、可読性の向上だけでない様々な影響を与えうる。
-その点について、本論文ではいくつかの事例と実装したコンパイラにおける性能の評価から考察し、実際にSelf-host化を行うにあたっての注意事項としてまとめる。
+そのアプローチとして、Swiftで記述したSwiftコンパイラを実装し、そのソースコードの可読性を現行のSwiftコンパイラと比較することで、SwiftコンパイラのSelf-host化が可読性の向上に有効であることを示す。
 
 
 \section{本論文の構成}

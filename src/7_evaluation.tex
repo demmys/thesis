@@ -95,24 +95,24 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 \begin{table}[!hbtp]
     \begin{center}
         \caption{計測に使用するSwiftプログラム}
-        \begin{tabular}{|p{0.4\linewidth}|p{0.55\linewidth}|}
+        \begin{tabular}{|p{0.4\linewidth}|p{0.1\linewidth}|p{0.45\linewidth}|}
             \hline
-            ファイル名 & プログラムの概要\\
+            ファイル名 & コメントや空行を除いた行数 & プログラムの概要\\
             \hline
             \hline
-            simple\_values.swift & 変数の定義と使用、文字・数値・配列・辞書リテラルの使用について説明されている。\\
+            simple\_values.swift & 25 & 変数の定義と使用、文字・数値・配列・辞書リテラルの使用について説明されている。\\
             \hline
-            control\_flow.swift & 分岐や繰り返しについて、Swiftに特徴的なオプショナル値やパターンマッチと組み合わせた例を中心に説明されている。\\
+            control\_flow.swift & 67 & 分岐や繰り返しについて、Swiftに特徴的なオプショナル値やパターンマッチと組み合わせた例を中心に説明されている。\\
             \hline
-            functions\_and\_closures.swift & 関数の定義と使用について、基本的なものから可変長引数やクロージャを用いた高階関数の呼び出しなどの応用的なものまでが説明されている。\\
+            functions\_and\_closures.swift & 69 & 関数の定義と使用について、基本的なものから可変長引数やクロージャを用いた高階関数の呼び出しなどの応用的なものまでが説明されている。\\
             \hline
-            objects\_and\_classes.swift & クラスとそのインスタンス化、継承、関数のオーバーライドなどのSwiftにおけるオブジェクト指向プログラミングについて説明されている。\\
+            objects\_and\_classes.swift & 82 & クラスとそのインスタンス化、継承、関数のオーバーライドなどのSwiftにおけるオブジェクト指向プログラミングについて説明されている。\\
             \hline
-            enumerations\_and\_structures.swift & 構造体とSwiftに特徴的な関数や関連型などを持つ事のできる列挙体についてその宣言方法と使い方が説明されている。\\
+            enumerations\_and\_structures.swift & 62 & 構造体とSwiftに特徴的な関数や関連型などを持つ事のできる列挙体についてその宣言方法と使い方が説明されている。\\
             \hline
-            protocols\_and\_extensions.swift & 存在型や型拡張によるクラスや構造体の分類および拡張について説明されている。\\
+            protocols\_and\_extensions.swift & 33 & 存在型や型拡張によるクラスや構造体の分類および拡張について説明されている。\\
             \hline
-            generics.swift & 型パラメータ多相を用いた関数や列挙体の宣言方法とその使用方法について説明されている。\\
+            generics.swift & 25 & 型パラメータ多相を用いた関数や列挙体の宣言方法とその使用方法について説明されている。\\
             \hline
         \end{tabular}
         \label{table:complexity-measure}
@@ -120,6 +120,7 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 \end{table}
 
 \section{計測}
+\label{evaluation:measure}
 
 まず、表~\ref{table:complexity-measure}の各プログラムをコンパイルした場合それぞれについて~\ref{evaluation:method}節で説明した方法を用いて実行部分LOCを計測した。
 表~\ref{table:loc-result}がその結果および現行のSwiftコンパイラの結果(表中Swift)をTreeSwiftの結果(表中TreeSwift)で割った値の一覧である。
@@ -262,7 +263,70 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 実際、現行のSwiftコンパイラはその後に控えるSIL生成のためにASTを走査して正当性の確認を行ったり、Swiftプログラムの構文からSIL生成用の付帯情報が構文解析時に生成されるようにしており、それらのTreeSwiftに存在しない機能を提供するためのプログラムが実行部分LOCの大きな差を生んでいると見られる。
 なお、表~\ref{table:loc-treeswift-per-file}においてTreeSwiftでの構文解析本体ファイルおよびASTファイル以外のファイルの実行部分LOCが同じ値となっているのは、TreeSwiftではそうした追加情報の生成やASTの正当性確認を行っておらず、その他のファイルがコンパイラ全体で使用されるファイルIOの仕組みなどを提供する基本ツールだけで構成されており、構文にかかわらず同じように使用されるからである。
 
+しかし、図~\ref{img:parse-loc-result}にあるそうした部分を差っ引いた構文解析本体ファイルについてのみの結果を見ても、simple\_values.swift以外の例でTreeSwiftの方が低い実行部分LOCを記録している。
+特にこの差を作り出していると考えられる原因の1つが、両コンパイラにおける分岐構文の使用傾向の差異である。
+表~\ref{table:branching-method-swift}および表~\ref{table:branching-method-treeswift}は各対象プログラムを実行した際の構文解析本体ファイルにおいて実行された行(実行部分LOCの算出元となっている行)の内、現行のSwiftコンパイラではif文とswitch文とassert文、TreeSwiftではif文とswitch文とguard文がそれぞれ何度使用されているかをまとめたものである。
 
+これらの表に見られる通り、現行のSwiftコンパイラにおいてはswitch文に対してif文が多く使用されているのに比べて、TreeSwiftではif文の使用量が減り、代わりにswitch文の使用量が増加している。
+これは、Swiftの持つ強力なパターンマッチや列挙型によって、C++では異なる分岐文で別個に処理されていたものを同一のswitch文で使用できるようになったためだと考えられる。
+Swiftのパターンマッチは条件判定と同時に列挙型やタプルなどの内部構造を分解して変数に束縛する役割を果たすため、switch文への移行は複数の条件文をまとめた上で変数の宣言や代入に関する行を削減することに繋がり、結果として実行部分LOCに減少につながっていたと考えられる。
+
+また、simple\_values.swiftのみにおいてTreeSwiftの実行部分LOCが大きくなっていたのは、~\ref{implementation:abstract:parser}節で述べたように、TreeSwiftでは構文解析のステップを簡略化するために字句解析器が比較して複雑なアルゴリズムを採用しているためだと思われる。
+これは、7つの対象プログラムについてSwiftの構文解析本体ファイルのみを対象とした実行部分LOCの標本分散は約53874であるのに対して、TreeSwiftでは約5930と低く、TreeSwiftの方が全てのプログラムで共通して実行されている部分が多くの部分を占めていることからも考察できる。
+
+\begin{table}[!hbtp]
+    \begin{center}
+        \caption{Swiftにおける構文解析本体ファイルの実行部分中の分岐構文の行数}
+        \begin{tabular}{|p{0.5\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
+            \hline
+            対象プログラム & if文 & switch文 & assert文\\
+            \hline
+            \hline
+            simple\_values.swift & 266 & 22 & 33\\
+            \hline
+            control\_flow.swift & 392 & 28 & 43\\
+            \hline
+            functions\_and\_closures.swift & 432 & 28 & 46\\
+            \hline
+            objects\_and\_classes.swift & 449 & 28 & 37\\
+            \hline
+            enumerations\_and\_structures.swift & 407 & 26 & 38\\
+            \hline
+            protocols\_and\_extensions.swift & 407 & 27 & 35\\
+            \hline
+            generics.swift & 436 & 26 & 43\\
+            \hline
+        \end{tabular}
+        \label{table:branching-method-swift}
+    \end{center}
+\end{table}
+
+\begin{table}[!hbtp]
+    \begin{center}
+        \caption{TreeSwiftにおける構文解析本体ファイルの実行部分中の分岐構文の行数}
+        \begin{tabular}{|p{0.5\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
+            \hline
+            対象プログラム & if文 & switch文 & guard文\\
+            \hline
+            \hline
+            simple\_values.swift & 193 & 60 & 19\\
+            \hline
+            control\_flow.swift & 223 & 68 & 22\\
+            \hline
+            functions\_and\_closures.swift & 206 & 69 & 21\\
+            \hline
+            objects\_and\_classes.swift & 208 & 69 & 23\\
+            \hline
+            enumerations\_and\_structures.swift & 219 & 71 & 26\\
+            \hline
+            protocols\_and\_extensions.swift & 201 & 64 & 25\\
+            \hline
+            generics.swift & 214 & 70 & 26\\
+            \hline
+        \end{tabular}
+        \label{table:branching-method-treswift}
+    \end{center}
+\end{table}
 
 %%% Local Variables:
 %%% mode: japanese-latex
