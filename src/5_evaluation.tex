@@ -1,7 +1,7 @@
 \chapter{評価}
 \label{evaluation}
 
-本章では、~\ref{implementation}章で述べたTreeSwiftを用いて、現行のSwiftコンパイラとその構文解析器の複雑性に関する比較評価を行う。
+本章では、~\ref{refinement}章で述べたTreeSwiftを用いて、現行のSwiftコンパイラとその構文解析器の複雑性に関する比較評価を行う。
 
 \section{評価手法}
 \label{evaluation:method}
@@ -72,7 +72,7 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 現行のSwiftコンパイラについては、もともと用意されている構文解析のみを実行するオプションをつけるだけでなく、通常そのオプションと共に有効化されるASTの表示機能をコメントアウトすることで、構文解析のみが確実に実行されるように調整している。
 また、コンパイラを読み込むデバッガは両コンパイラ共にLLDBのバージョン340.4.119を使用している。
 具体的に評価で使用しているSwiftコンパイラおよびその実行時オプションの詳細は表~\ref{table:swift-exe-option}にまとめている。
-なお、~\ref{implementation:abstract:parser}節で述べたようにTreeSwiftと現行のSwiftコンパイラではモジュールファイルの形式が異なっており、その点が結果に影響する可能性があるため、計測時にはコンパイラへ標準ライブラリのパスを与えず、モジュールファイルの解析に関する部分が計測対象に含まれないようにしている。
+なお、~\ref{implementation:abstract}節で述べたようにTreeSwiftと現行のSwiftコンパイラではモジュールファイルの形式が異なっており、その点が結果に影響する可能性があるため、計測時にはコンパイラへ標準ライブラリのパスを与えず、モジュールファイルの解析に関する部分が計測対象に含まれないようにしている。
 
 \begin{table}[!hbtp]
     \begin{center}
@@ -117,7 +117,7 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
             generics.swift & 25 & 型パラメータ多相を用いた関数や列挙体の宣言方法とその使用方法について説明されている。\\
             \hline
         \end{tabular}
-        \label{table:complexity-measure}
+        \label{table:measure-sample-programs}
     \end{center}
 \end{table}
 
@@ -133,7 +133,7 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 なお、その他のファイル群にはコンパイラ内の各所から共通で使用されるユーティリティやASTから間接的に使用される構文解析後の処理ステップ用のデータ構造などが含まれている。
 
 表~\ref{table:loc-swift-per-file}および表~\ref{table:loc-treeswift-per-file}は各コンパイラごとにそのファイル群ごとの再集計を行った結果であり、図~\ref{img:parse-loc-result}および図~\ref{img:ast-loc-result}はそれらの値の内、構文解析ファイル群とASTファイル群それぞれの実行部分LOCについて現行のSwiftコンパイラのものとTreeSwiftのものを同じグラフ上にプロットしたものである。
-また、構文解析ファイル群については後の考察のために各コンパイラにおける実行部分LOCの差と比を表~\ref{table:parse-loc-arith}にまとめた。
+また、構文解析ファイル群については後の考察のために各コンパイラにおける実行部分LOCの差と現行のSwiftコンパイラの実行部分LOCに対する差の割合を表~\ref{table:parse-loc-arith}にまとめた。
 
 \begin{table}[!hbtp]
     \begin{center}
@@ -237,22 +237,22 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
         \caption{各コンパイラの構文解析本体ファイルに対象を絞った実行部分LOCの差と比}
         \begin{tabular}{|p{0.45\linewidth}|p{0.225\linewidth}|p{0.225\linewidth}|}
             \hline
-            対象プログラム & 差 & 比\\
+            対象プログラム & 差 & SwiftからのLOC減少率\\
             \hline
             \hline
-            simple\_values.swift & -194 & 0.867\\
+            simple\_values.swift & -194 & -16.9 \%\\
             \hline
-            control\_flow.swift & 118 & 1.069\\
+            control\_flow.swift & 118 & 7.52 \%\\
             \hline
-            functions\_and\_closures.swift & 338 & 1.206\\
+            functions\_and\_closures.swift & 338 & 19.0 \%\\
             \hline
-            objects\_and\_classes.swift & 380 & 1.239\\
+            objects\_and\_classes.swift & 380 & 19.6 \%\\
             \hline
-            enumerations\_and\_structures.swift & 228 & 1.138\\
+            enumerations\_and\_structures.swift & 228 & 12.3 \%\\
             \hline
-            protocols\_and\_extensions.swift & 307 & 1.199\\
+            protocols\_and\_extensions.swift & 307 & 17.2 \%\\
             \hline
-            generics.swift & 277 & 1.167\\
+            generics.swift & 277 & 14.6 \%\\
             \hline
         \end{tabular}
         \label{table:parse-loc-arith}
@@ -274,7 +274,7 @@ LOCはその計測の容易さから部分的なプログラムでも正確に�
 これは、Swiftの持つ強力なパターンマッチや列挙型によって、C++では異なる分岐文で別個に処理されていたものを同一のswitch文で使用できるようになったためだと考えられる。
 Swiftのパターンマッチは条件判定と同時に列挙型やタプルなどの内部構造を分解して変数に束縛する役割を果たすため、switch文への移行は複数の条件文をまとめた上で変数の宣言や代入に関する行を削減することに繋がり、結果として実行部分LOCに減少につながっていたと考えられる。
 
-また、simple\_values.swiftのみにおいてTreeSwiftの実行部分LOCが大きくなっていたのは、~\ref{implementation:abstract:parser}節で述べたように、TreeSwiftでは構文解析のステップを簡略化するために字句解析器が比較して複雑なアルゴリズムを採用しているためだと思われる。
+また、simple\_values.swiftのみにおいてTreeSwiftの実行部分LOCが大きくなっていたのは、~\ref{implementation:abstract}節で述べたように、TreeSwiftでは構文解析のステップを簡略化するために字句解析器が比較して複雑なアルゴリズムを採用しているためだと思われる。
 これは、7つの対象プログラムについてSwiftの構文解析本体ファイルのみを対象とした実行部分LOCの標本分散は約53874であるのに対して、TreeSwiftでは約5930と低く、TreeSwiftの方が全てのプログラムで共通して実行されている部分が多くの部分を占めていることからも考察できる。
 
 以上の考察により、TreeSwiftは基本的にSwiftのパターンマッチなどの機能によって現行のSwiftコンパイラよりもその複雑性を低くすることに成功しており、Self-host化によって可読性の向上に成功したといえる。
@@ -282,7 +282,7 @@ Swiftのパターンマッチは条件判定と同時に列挙型やタプルな
 \begin{table}[!hbtp]
     \begin{center}
         \caption{Swiftにおける構文解析ファイル群の実行部分中の分岐構文の行数}
-        \begin{tabular}{|p{0.5\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
+        \begin{tabular}{|p{0.4\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
             \hline
             対象プログラム & if文 & switch文 & assert文\\
             \hline
@@ -309,7 +309,7 @@ Swiftのパターンマッチは条件判定と同時に列挙型やタプルな
 \begin{table}[!hbtp]
     \begin{center}
         \caption{TreeSwiftにおける構文解析ファイル群の実行部分中の分岐構文の行数}
-        \begin{tabular}{|p{0.5\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
+        \begin{tabular}{|p{0.4\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|p{0.15\linewidth}|}
             \hline
             対象プログラム & if文 & switch文 & guard文\\
             \hline
