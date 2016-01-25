@@ -63,7 +63,7 @@
 \section{計測}
 \label{evaluation:measure}
 
-まず、表~\ref{table:complexity-measure}の各プログラムをコンパイルした場合それぞれについて~\ref{evaluation:method}節で説明した方法を用いて実行部分LOCを計測した。
+まず、表~\ref{table:measure-sample-programs}の各プログラムをコンパイルした場合それぞれについて~\ref{evaluation:method}節で説明した方法を用いて実行部分LOCを計測した。
 表~\ref{table:loc-result}がその結果および現行のSwiftコンパイラの結果(表中Swift)とTreeSwiftの結果(表中TreeSwift)の比の一覧である。
 単純に計測結果だけを見ると、プログラムのコンパイルに要した行数は現行のSwiftコンパイラの方が2$\sim$3倍近く多い。
 ただし、TreeSwiftではSwiftコンパイラとして必要な構文解析以外の処理が全て実装されているわけではないため、SwiftコンパイラにおいてはASTの検査など後の処理のための準備が行われており、実行部分LOCがSelf-host化による差だけでなく、その差によって大きく算出されている可能性がある。
@@ -204,7 +204,7 @@
 実際、現行のSwiftコンパイラはその後に控えるSIL生成のためにASTを走査して正当性の確認を行ったり、Swiftプログラムの構文からSIL生成用の付帯情報が構文解析時に生成されるようにしており、それらのTreeSwiftに存在しない機能を提供するためのプログラムが実行部分LOCの大きな差を生んでいると見られる。
 なお、表~\ref{table:loc-treeswift-per-file}においてその他のファイル群の実行部分LOCが同じ値となっているのは、TreeSwiftではそうした追加情報の生成やASTの正当性確認を行っておらず、その他のファイルがコンパイラ全体で使用されるファイルI/Oの仕組みなどを提供する基本ツールだけで構成されており、構文にかかわらず同じように使用されているからである。
 
-しかし、図~\ref{img:parse-loc-result}にあるそうした部分を差っ引いた構文解析ファイル群の結果のみについて見ても、simple\_values.swift以外のプログラム全てでTreeSwiftの方が低い実行部分LOCを記録している。
+しかし、図~\ref{img:parse-loc-result}にあるそうした部分を差し引いた構文解析ファイル群の結果のみについて見ても、simple\_values.swift以外のプログラム全てでTreeSwiftの方が低い実行部分LOCを記録している。
 特にこの差を作り出していると考えられる原因の1つが、両コンパイラにおける分岐構文の使用傾向の差異である。
 表~\ref{table:branching-method-swift}および表~\ref{table:branching-method-treeswift}は構文解析ファイル群の実行部分LOCの算出元となっている行の内、分岐構文の使用されている行がどれだけ存在するかを調べたものである。
 なお、分岐構文としては現行のSwiftコンパイラではif文とswitch文とassert文、TreeSwiftではif文とswitch文とguard文をそれぞれ対象としている。
@@ -213,10 +213,10 @@
 これは、Swiftの持つ強力なパターンマッチや列挙型によって、C++では異なる分岐文で別個に処理されていたものを同一のswitch文で使用できるようになったためだと考えられる。
 Swiftのパターンマッチは条件判定と同時に列挙型やタプルなどの内部構造を分解して変数に束縛する役割を果たすため、switch文への移行は複数の条件文をまとめた上で変数の宣言や代入に関する行を削減することに繋がり、結果として実行部分LOCに減少につながっていたと考えられる。
 
-また、simple\_values.swiftのみにおいてTreeSwiftの実行部分LOCが大きくなっていたのは、~\ref{implementation:abstract}節で述べたように、TreeSwiftでは構文解析のステップを簡略化するために字句解析器が比較して複雑なアルゴリズムを採用しているためだと思われる。
+また、simple\_values.swiftのみにおいてTreeSwiftの実行部分LOCが大きくなっていたのは、~\ref{implementation:abstract}節で述べたように、TreeSwiftでは構文解析のステップを簡略化することを目的として、現行のSwiftコンパイラのものと比較して複雑なアルゴリズムを字句解析器に採用しているためだと思われる。
 これは、7つの対象プログラムについてSwiftの構文解析本体ファイルのみを対象とした実行部分LOCの標本分散は約53874であるのに対して、TreeSwiftでは約5930と低く、TreeSwiftの方が全てのプログラムで共通して実行されている部分が多くの部分を占めていることからも考察できる。
 
-以上の考察より、表~\ref{table:parse-loc-arith}中の結果はSwiftコンパイラをSelf-host化したことによる効果を充分表しており、Self-host化によってSwiftコンパイラの実行部分LOCを評価に用いたプログラムで平均して10.47\%減少させることができたことがわかる。
+以上の考察より、表~\ref{table:parse-loc-arith}中の結果はSwiftコンパイラをSelf-host化したことによる効果を充分表しており、評価に用いたプログラムにおいてはSelf-host化によってSwiftコンパイラの実行部分LOCを平均10.47\%減少させることができたことがわかる。
 
 \begin{table}[!hbtp]
     \begin{center}
