@@ -206,7 +206,7 @@ C\#は2000年にMicrosoft社より.NET Frameworkを利用するアプリケー�
 Microsoft社ではBootstrapを行うにあたってその性能に対して非常に注力しており、結果としてBootstrap後も想定していた充分によい性能が発揮できていると~\cite{roslyn-performance}内で述べている。
 
 
-\section{Self-host化による可読性の向上以外のメリット}
+\section{Self-host化によるメリット}
 \label{side-effect:swift:merit}
 
 まず、表~\ref{table:bootstrap-merit}に~\ref{side-effect:instance}節で述べた事例から~\ref{approach:idea}節で述べた可読性の向上に繋がる点以外のBootstrapにおける利点をまとめ、SwiftがBootstrapを行った場合にそれらの利点が得られる可能性があるか否かをまとめた。
@@ -236,7 +236,7 @@ Microsoft社ではBootstrapを行うにあたってその性能に対して非�
 ~\ref{side-effect:instance:csharp}節で挙げた.NET Compiler Platformのようにコンパイラの各フローをライブラリとして提供することは設計次第で可能だろう。
 しかし、現状のSwiftにはC\#に対するVisual Studioのようなその言語で記述されたIDEや言語のためのツールなどは存在しておらず、そのAPIをSwiftで提供したとしても、特筆すべきほどの利点にはなり得ない可能性が高い。
 
-\section{Self-host化によって想定されるデメリット}
+\section{Self-host化によるデメリット}
 \label{side-effect:swift:demerit}
 
 次に、表~\ref{table:bootstrap-demerit}に~\ref{side-effect:instance}節で述べた事例からBootstrapにおいて発生しうる課題をまとめ、SwiftがBootstrapを行った場合にそれらの課題が問題となるかどうかをまとめた。
